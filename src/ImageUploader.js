@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { envData } from './App';
 
 
 const ImageUploader = ({ token }) => {
@@ -23,7 +24,7 @@ const ImageUploader = ({ token }) => {
    const formData = new FormData()
    formData.append('File', selectedFile) // todo : handle if file doesnt exist ?
 
-   const result = await fetch('http://localhost:8080/photos', {
+   const result = await fetch(`${envData.apiURL}/photos`, {
      method: 'POST', // *GET, POST, PUT, DELETE, etc.
      headers: { 'Authorization': `Bearer ${token}` },
      // body: JSON.stringify({ pseudo: pseudoRegister, password: passwordRegister })
@@ -37,12 +38,6 @@ const ImageUploader = ({ token }) => {
     }
   
     return (
-    //     <form action="http://localhost:8080/photos" method="post" encType="multipart/form-data">
-    //               <input type="file" multiple name="file"/>
-    //               <button type="submit">Submit</button>
-    //           </form>
-    //     {/* < Footer /> */}
-    //   </div>
     <div>
         <input type="file" name="file" onChange={handleChangeFile} />
         <div>

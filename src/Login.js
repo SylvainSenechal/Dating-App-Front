@@ -1,5 +1,6 @@
 import { useState } from 'react';
 // import Footer from './Footer'
+import { envData } from './App';
 
 const Login = ({ setUser }) => {
   const [pseudoRegister, setPseudoRegister] = useState("My Pseudo")
@@ -8,12 +9,12 @@ const Login = ({ setUser }) => {
   const [passwordLogin, setPasswordLogin] = useState("")
   const [messageRegister, setMessageRegister] = useState("")
   const [keepConnected, setKeepConnected] = useState(false)
+  console.log(envData)
 
   const handleSubmitRegistration = async event => {
     event.preventDefault()
     console.log(0)
-
-    const result = await fetch('http://localhost:8080/users', {
+    const result = await fetch(`${envData.apiURL}/users`, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pseudo: pseudoRegister, password: passwordRegister })
@@ -29,7 +30,7 @@ const Login = ({ setUser }) => {
   const handleSubmitLogin = async event => {
     event.preventDefault()
 
-    const result = await fetch('http://localhost:8080/auth', {
+    const result = await fetch(`${envData.apiURL}/auth`, {
       method: 'POST', // *GET, POST, PUT, DELETE, etc.
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ pseudo: pseudoLogin, password: passwordLogin })
@@ -92,10 +93,6 @@ const Login = ({ setUser }) => {
           </form>
         </div>
       </div>
-      {/* <form action="http://localhost:8080/photos" method="post" encType="multipart/form-data">
-        <input type="file" multiple name="file"/>
-        <button type="submit">Submit</button>
-      </form> */}
       {/* < Footer /> */}
     </div>
   )

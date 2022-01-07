@@ -4,6 +4,10 @@ import Dashboard from './Dashboard';
 
 
 // TODO : utiliser session storage au lieu de user
+const envData = {
+  apiURL: process.env.NODE_ENV === "production" ? "TODO" : "http://localhost:8080"
+}
+export {envData}
 
 const App = props => {
   console.log('App props : ', props)
@@ -16,6 +20,7 @@ const App = props => {
   })
 
   console.log(user)
+  console.log(envData)
 
   useEffect(() => { // This is only to restore the "keep me connected" session
     const restoreSession = async () => {
@@ -30,7 +35,7 @@ const App = props => {
         console.log(Date.now() / 1000  + 5)
         if (Date.now() / 1000  + 5 < exp) { // 5 secs of margin 
           console.log("relogging")
-          const result = await fetch(`http://localhost:8080/auth/refresh`, { // todo check error on this
+          const result = await fetch( `${envData.apiURL}/auth/refresh`, { // todo check error on this
             method: 'POST', // *GET, POST, PUT, DELETE, etc.
             headers: {
               'Content-Type': 'application/json',
@@ -59,7 +64,7 @@ const App = props => {
 
   useEffect(() => { // This will check for refreshing the current token if outdated, 
     const fetchData = async () => {
-      const result = await fetch(`http://localhost:8080/auth/refresh`, { // todo check error on this
+      const result = await fetch(`${envData.apiURL}/auth/refresh`, { // todo check error on this
         method: 'POST', // *GET, POST, PUT, DELETE, etc.
         headers: {
           'Content-Type': 'application/json',
