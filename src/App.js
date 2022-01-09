@@ -7,7 +7,11 @@ import Dashboard from './Dashboard';
 const envData = {
   apiURL: process.env.NODE_ENV === "production" ? "TODO" : "http://localhost:8080"
 }
-export {envData}
+export { envData }
+
+// const USER_ACTIVITIES = {
+//   findingLove: 1
+// }
 
 const App = props => {
   console.log('App props : ', props)
@@ -16,11 +20,15 @@ const App = props => {
     loggedIn: false,
     keepConnected: false,
     token: "",
-    refreshToken: ""
+    refreshToken: "",
+    activity: "finding love"
   })
 
-  console.log(user)
-  console.log(envData)
+  // console.log(user)
+  // console.log(envData)
+  // console.log(document.body.clientWidth)
+  // console.log(document.body.offsetWidth)
+  // console.log(document.body.scrollWidth)
 
   useEffect(() => { // This is only to restore the "keep me connected" session
     const restoreSession = async () => {
@@ -32,10 +40,10 @@ const App = props => {
         const tokenPayload = JSON.parse(atob(tokenB64))
         const { pseudo, userId, iat, exp } = tokenPayload
         console.log(exp)
-        console.log(Date.now() / 1000  + 5)
-        if (Date.now() / 1000  + 5 < exp) { // 5 secs of margin 
+        console.log(Date.now() / 1000 + 5)
+        if (Date.now() / 1000 + 5 < exp) { // 5 secs of margin 
           console.log("relogging")
-          const result = await fetch( `${envData.apiURL}/auth/refresh`, { // todo check error on this
+          const result = await fetch(`${envData.apiURL}/auth/refresh`, { // todo check error on this
             method: 'POST', // *GET, POST, PUT, DELETE, etc.
             headers: {
               'Content-Type': 'application/json',
@@ -43,12 +51,13 @@ const App = props => {
             body: JSON.stringify({ refresh_token: refreshToken })
           })
           const readableResult = await result.json()
-          setUser({
+          setUser(prev => ({
+            ...prev,
             loggedIn: true,
             keepConnected: true, // attention à ce keepconnected
             token: readableResult.token,
             refreshToken: refreshToken
-          })
+          }))
         }
         else {
           console.log('refreshToken found but expired')
@@ -72,24 +81,25 @@ const App = props => {
         body: JSON.stringify({ refresh_token: user.refreshToken })
       })
       const readableResult = await result.json()
-      console.log(readableResult)
-      setUser({
+      // console.log(readableResult)
+      setUser(prev => ({
+        ...prev,
         loggedIn: true,
         keepConnected: true, // attention à ce keepconnected
         token: readableResult.token,
         refreshToken: user.refreshToken   //todo : refresh le refresh token ?
-      })
+      }))
     }
 
     const timer = setInterval(() => {
       if (user.token !== "") { // If not logged in, we got nothing to refresh
-        console.log(user.token)
+        // console.log(user.token)
         const tokenData64URL = user.token.split('.')[1]
         const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
         const tokenPayload = JSON.parse(atob(tokenB64))
         const { pseudo, userId, iat, exp } = tokenPayload
         const margin = 5 // We refresh the token x seconds before it actually expires
-        console.log(Date.now() / 1000 + margin - exp)
+        // console.log(Date.now() / 1000 + margin - exp)
         if (Date.now() / 1000 + margin - exp > 0) { // If token is soon to be expired; we ask a new one
           fetchData()
         }
