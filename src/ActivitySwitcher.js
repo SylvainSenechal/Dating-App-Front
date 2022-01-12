@@ -28,6 +28,9 @@ const ActivitySwitcher = ({ user, setUser }) => {
 			<div id="profile">
 				<button onClick={showProfile}> profile </button>
 			</div>
+			<div id="insights">
+				<button onClick={showProfile}> insights </button>
+			</div>
 		</div>
 	)
 }

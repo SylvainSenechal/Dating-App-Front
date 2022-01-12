@@ -104,7 +104,7 @@ const App = props => {
           fetchData()
         }
       }
-    }, 1000)
+    }, 3000)
 
     return () => clearTimeout(timer);
   }, [user])

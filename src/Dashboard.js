@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import ImageUploader from './ImageUploader';
 import FindingLove from './FindingLove';
 import ActivitySwitcher from './ActivitySwitcher';
-import UserProfile from './UserProfile';
+import UserSettings from './UserSettings';
 
 const Dashboard = ({ user, setUser }) => {
   // console.log(user)
@@ -16,12 +16,12 @@ const Dashboard = ({ user, setUser }) => {
   // console.log(tokenPayload)
   // console.log("token payload :", pseudo, sub, iat, exp)
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setDate(Math.floor(Date.now() / 1000))
-    }, 1000)
-    return () => clearTimeout(timer);
-  }, [])
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setDate(Math.floor(Date.now() / 1000))
+  //   }, 3000)
+  //   return () => clearTimeout(timer);
+  // }, [])
 
   const logout = () => {
     window.localStorage.setItem('refreshToken', "")
@@ -43,7 +43,7 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           <div id="display">
-            <UserProfile user={user} setUser={setUser} UserProfile />
+            <UserSettings user={user} setUser={setUser} UserSettings />
           </div>
           <ActivitySwitcher user={user} setUser={setUser} />
         </div>
