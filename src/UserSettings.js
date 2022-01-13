@@ -8,13 +8,16 @@ const UserSettings = ({ user, setUser }) => {
 		age: 0,
 		password: "",
 		pseudo: "",
+		email: "",
+		latitude: 0,
+		longitude: 0
 	})
 
 	const tokenData64URL = user.token.split('.')[1]
 	const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
 	const tokenPayload = JSON.parse(atob(tokenB64))
 	const { pseudo, sub, iat, exp } = tokenPayload
-	
+
 	console.log(userInfos)
 
 	useEffect(() => {
@@ -33,16 +36,18 @@ const UserSettings = ({ user, setUser }) => {
 	}, []);
 
 	const updateUser = async () => {
+		console.log("use infos", userInfos)
+		console.log(JSON.stringify(userInfos))
 		const result = await fetch(`${envData.apiURL}/users/${sub}`, {
 			method: 'PUT',
-			headers: { 
+			headers: {
 				'Authorization': `Bearer ${user.token}`,
 				'Content-Type': 'application/json'
 			},
-      body: JSON.stringify( userInfos )
+			body: JSON.stringify(userInfos)
 		})
 		if (result.status !== 200) {
-			console.log("error updating profile") // todo handle this
+			console.log("error updating profile : ", await result.json()) // todo handle this
 		}
 	}
 
@@ -53,13 +58,13 @@ const UserSettings = ({ user, setUser }) => {
 
 			<div id="privateInfos">
 				Private infos
-				{/* <label> Enter your id:
-					<input type="number" name="id" id="userID" value={userInfos.id} onChange={e =>
+				<label> Email:
+					<input type="text" id="userMail" value={userInfos.email} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
-							id: e.target.value
+							email: e.target.value
 						}))} />
-				</label> */}
+				</label>
 			</div>
 
 			<div id="publicInfos">
@@ -77,9 +82,26 @@ const UserSettings = ({ user, setUser }) => {
 					<input type="number" id="userAge" value={userInfos.age} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
-						age: Number(e.target.value)
+							age: Number(e.target.value)
 						}))} />
 				</label>
+
+				<label> Position latitude:
+					<input type="number" id="userLatitude" value={userInfos.latitude} onChange={e =>
+						setUserInfos(prev => ({
+							...prev,
+							latitude: Number(e.target.value)
+						}))} />
+				</label>
+
+				<label> Position longitude:
+					<input type="number" id="userLongitude" value={userInfos.longitude} onChange={e =>
+						setUserInfos(prev => ({
+							...prev,
+							longitude: Number(e.target.value)
+						}))} />
+				</label>
+
 
 				{/* <label> Enter your genra:
 					<select type="genra" id="userGenra" value={userInfos.genra} onChange={e =>
