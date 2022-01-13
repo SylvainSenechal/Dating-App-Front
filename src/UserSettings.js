@@ -2,15 +2,17 @@ import { useState, useEffect } from 'react';
 import { envData } from './App';
 
 const UserSettings = ({ user, setUser }) => {
-	// TODO : decoupler donnnee a update de mes donnees ?
 	const [userInfos, setUserInfos] = useState({
 		id: -1,
 		age: 0,
 		password: "",
-		pseudo: "",
+		pseudo: "", // TODO : DO NOT SEND BACK THE PASSWORD
 		email: "",
+		gender: "",
+		looking_for: "",
 		latitude: 0,
-		longitude: 0
+		longitude: 0,
+		search_radius: 0
 	})
 
 	const tokenData64URL = user.token.split('.')[1]
@@ -27,17 +29,13 @@ const UserSettings = ({ user, setUser }) => {
 				headers: { 'Content-Type': 'application/json' }
 			})
 			const readableResult = await result.json()
-			console.log(readableResult)
 			setUserInfos(readableResult)
-			console.log("user infos : ", userInfos)
 		}
 
 		getUserInfos();
 	}, []);
 
 	const updateUser = async () => {
-		console.log("use infos", userInfos)
-		console.log(JSON.stringify(userInfos))
 		const result = await fetch(`${envData.apiURL}/users/${sub}`, {
 			method: 'PUT',
 			headers: {
@@ -86,6 +84,14 @@ const UserSettings = ({ user, setUser }) => {
 						}))} />
 				</label>
 
+				<label> Gender:
+					<input type="text" id="userGender" value={userInfos.gender} onChange={e =>
+						setUserInfos(prev => ({
+							...prev,
+							gender: e.target.value
+						}))} />
+				</label>
+
 				<label> Position latitude:
 					<input type="number" id="userLatitude" value={userInfos.latitude} onChange={e =>
 						setUserInfos(prev => ({
@@ -118,6 +124,21 @@ const UserSettings = ({ user, setUser }) => {
 
 			<div id="matchingSettings">
 				Matching settings
+				<label> Looking for:
+					<input type="text" id="userLookingFor" value={userInfos.looking_for} onChange={e =>
+						setUserInfos(prev => ({
+							...prev,
+							looking_for: e.target.value
+						}))} />
+				</label>
+
+				<label> Search Radius, KM:
+					<input type="number" id="userSearchRadius" value={userInfos.search_radius} onChange={e =>
+						setUserInfos(prev => ({
+							...prev,
+							search_radius: Number(e.target.value)
+						}))} />
+				</label>
 			</div>
 			user profile :
 			<div>{userInfos.id} </div>
