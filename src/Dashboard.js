@@ -12,9 +12,9 @@ const Dashboard = ({ user, setUser }) => {
   const tokenData64URL = user.token.split('.')[1]
   const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
   const tokenPayload = JSON.parse(atob(tokenB64))
-  const { pseudo, sub, iat, exp } = tokenPayload
+  const { name, sub, iat, exp } = tokenPayload
   // console.log(tokenPayload)
-  // console.log("token payload :", pseudo, sub, iat, exp)
+  // console.log("token payload :", name, sub, iat, exp)
 
   // useEffect(() => {
   //   const timer = setInterval(() => {
@@ -53,7 +53,7 @@ const Dashboard = ({ user, setUser }) => {
         <div id="dashboardOut">
           <div id="dashboardIn">
             <div id="infos" className="dashboardElement">
-              <div> Hello {pseudo}, your id is {sub} </div>
+              <div> Hello {name}, your id is {sub} </div>
               <div> Your token is valid for {exp - date} second{(exp - date) > 1 ? 's' : ''} </div>
             </div>
             <div id="logout" className="dashboardElement">

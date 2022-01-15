@@ -19,9 +19,9 @@ const FindingLove = ({ user, setUser }) => {
 			})
 			console.log('getting new imagee')
 			console.log(result)
-			const readableResult = await result.json()
-			console.log(readableResult)
-			setImage(readableResult)
+			// const readableResult = await result.json()
+			// console.log(readableResult)
+			// setImage(readableResult)
 		}
 
 		getNewProfiles();

@@ -3,10 +3,10 @@ import { useState } from 'react';
 import { envData } from './App';
 
 const Login = ({ setUser }) => {
-  const [stepRegister, setStepRegister] = useState("email") // 1. email 2. password 3. other infos (pseudo, age)
+  const [stepRegister, setStepRegister] = useState("email") // 1. email 2. password 3. other infos (name, age)
   const [registerData, setRegisterData] = useState({
     email: "",
-    pseudo: "",
+    name: "",
     password: "",
     age: "",
     latitude: 0,
@@ -146,8 +146,8 @@ const Login = ({ setUser }) => {
           <div className="logInfo" style={{ "--order": 0 }}>
             <p className="borderLine"> Register </p>
             <form onSubmit={handleSubmitRegistration}>
-              <label htmlFor="pseudo"> Enter your name: </label>
-              <input type="text" name="pseudo" id="pseudoRegister" value={registerData.pseudo} onChange={e => setRegisterData(prev => ({ ...prev, pseudo: e.target.value }))} required />
+              <label htmlFor="name"> Enter your name: </label>
+              <input type="text" name="name" id="nameRegister" value={registerData.name} onChange={e => setRegisterData(prev => ({ ...prev, name: e.target.value }))} required />
               <label htmlFor="age"> Enter your age: </label>
               <input type="number" name="age" id="ageRegister" value={registerData.age} onChange={e => setRegisterData(prev => ({ ...prev, age: Number(e.target.value) }))} required />
               <label htmlFor="gender"> Enter your gender: </label>

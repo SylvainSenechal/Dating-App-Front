@@ -27,7 +27,7 @@ const ImageUploader = ({ token }) => {
 		const result = await fetch(`${envData.apiURL}/photos`, {
 			method: 'POST', // *GET, POST, PUT, DELETE, etc.
 			headers: { 'Authorization': `Bearer ${token}` },
-			// body: JSON.stringify({ pseudo: pseudoRegister, password: passwordRegister })
+			// body: JSON.stringify({ name: pseudoRegister, password: passwordRegister })
 			body: formData
 		})
 		console.log(1)

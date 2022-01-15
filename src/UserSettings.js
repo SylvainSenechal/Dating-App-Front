@@ -6,19 +6,21 @@ const UserSettings = ({ user, setUser }) => {
 		id: -1,
 		age: 0,
 		password: "",
-		pseudo: "", // TODO : DO NOT SEND BACK THE PASSWORD
+		name: "", // TODO : DO NOT SEND BACK THE PASSWORD
 		email: "",
 		gender: "",
 		looking_for: "",
 		latitude: 0,
 		longitude: 0,
-		search_radius: 0
+		search_radius: 0,
+		looking_for_age_min: 0,
+		looking_for_age_max: 0
 	})
 
 	const tokenData64URL = user.token.split('.')[1]
 	const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
 	const tokenPayload = JSON.parse(atob(tokenB64))
-	const { pseudo, sub, iat, exp } = tokenPayload
+	const { name, sub, iat, exp } = tokenPayload
 
 	console.log(userInfos)
 
@@ -69,10 +71,10 @@ const UserSettings = ({ user, setUser }) => {
 				Public infos
 
 				<label> Name:
-					<input type="text" id="userName" value={userInfos.pseudo} onChange={e =>
+					<input type="text" id="userName" value={userInfos.name} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
-							pseudo: e.target.value
+							name: e.target.value
 						}))} />
 				</label>
 
@@ -139,12 +141,28 @@ const UserSettings = ({ user, setUser }) => {
 							search_radius: Number(e.target.value)
 						}))} />
 				</label>
+
+				<label> Looking for age min:
+					<input type="number" id="userLookingForMin" value={userInfos.looking_for_age_min} onChange={e =>
+						setUserInfos(prev => ({
+							...prev,
+							looking_for_age_min: Number(e.target.value)
+						}))} />
+				</label>
+
+				<label> Looking for age max:
+					<input type="number" id="userLookingForMax" value={userInfos.looking_for_age_max} onChange={e =>
+						setUserInfos(prev => ({
+							...prev,
+							looking_for_age_max: Number(e.target.value)
+						}))} />
+				</label>
 			</div>
 			user profile :
 			<div>{userInfos.id} </div>
 			<div>{userInfos.age} </div>
 			<div>{userInfos.password} </div>
-			<div>{userInfos.pseudo} </div>
+			<div>{userInfos.name} </div>
 		</div>
 	)
 }

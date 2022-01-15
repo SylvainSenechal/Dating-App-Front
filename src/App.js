@@ -38,7 +38,7 @@ const App = props => {
         const tokenData64URL = refreshToken.split('.')[1]
         const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
         const tokenPayload = JSON.parse(atob(tokenB64))
-        const { pseudo, userId, iat, exp } = tokenPayload
+        const { name, userId, iat, exp } = tokenPayload
         console.log(exp)
         console.log(Date.now() / 1000 + 5)
         if (Date.now() / 1000 + 5 < exp) { // 5 secs of margin 
@@ -97,7 +97,7 @@ const App = props => {
         const tokenData64URL = user.token.split('.')[1]
         const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
         const tokenPayload = JSON.parse(atob(tokenB64))
-        const { pseudo, userId, iat, exp } = tokenPayload
+        const { name, userId, iat, exp } = tokenPayload
         const margin = 5 // We refresh the token x seconds before it actually expires
         // console.log(Date.now() / 1000 + margin - exp)
         if (Date.now() / 1000 + margin - exp > 0) { // If token is soon to be expired; we ask a new one
