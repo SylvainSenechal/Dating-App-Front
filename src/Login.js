@@ -91,7 +91,7 @@ const Login = ({ setUser }) => {
             checked={keepConnected}
             onChange={e => setKeepConnected(e.target.checked)}
           />
-          <input type="submit" value="Register" />
+          <input type="submit" value="Login" />
         </form>
       </div>
     )

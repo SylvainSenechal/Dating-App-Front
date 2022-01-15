@@ -9,6 +9,22 @@ const Dashboard = ({ user, setUser }) => {
   const [date, setDate] = useState(Math.floor(Date.now() / 1000))
   const [refresh, setRefresh] = useState(0)
 
+  const [userInfos, setUserInfos] = useState({
+    id: -1,
+    age: 0,
+    password: "",
+    name: "", // TODO : DO NOT SEND BACK THE PASSWORD
+    email: "",
+    gender: "",
+    looking_for: "",
+    latitude: 0,
+    longitude: 0,
+    search_radius: 0,
+    looking_for_age_min: 0,
+    looking_for_age_max: 0,
+    description: ""
+  })
+
   const tokenData64URL = user.token.split('.')[1]
   const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
   const tokenPayload = JSON.parse(atob(tokenB64))
@@ -34,7 +50,7 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           <div id="display">
-            <FindingLove user={user} setUser={setUser} FindingLove />
+            <FindingLove user={user} userInfos={userInfos} />
           </div>
           <ActivitySwitcher user={user} setUser={setUser} />
         </div>
@@ -43,13 +59,13 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           <div id="display">
-            <UserSettings user={user} setUser={setUser} UserSettings />
+            <UserSettings user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
           </div>
           <ActivitySwitcher user={user} setUser={setUser} />
         </div>
       )
     } else {
-      return (
+      return ( // TODO : remove this part ?
         <div id="dashboardOut">
           <div id="dashboardIn">
             <div id="infos" className="dashboardElement">

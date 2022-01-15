@@ -1,21 +1,9 @@
 import { useState, useEffect } from 'react';
 import { envData } from './App';
 
-const UserSettings = ({ user, setUser }) => {
-	const [userInfos, setUserInfos] = useState({
-		id: -1,
-		age: 0,
-		password: "",
-		name: "", // TODO : DO NOT SEND BACK THE PASSWORD
-		email: "",
-		gender: "",
-		looking_for: "",
-		latitude: 0,
-		longitude: 0,
-		search_radius: 0,
-		looking_for_age_min: 0,
-		looking_for_age_max: 0
-	})
+const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
+	console.log("hehe")
+	console.log(userInfos)
 
 	const tokenData64URL = user.token.split('.')[1]
 	const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
@@ -28,7 +16,10 @@ const UserSettings = ({ user, setUser }) => {
 		async function getUserInfos() {
 			const result = await fetch(`${envData.apiURL}/users/${sub}`, {
 				method: 'GET',
-				headers: { 'Content-Type': 'application/json' }
+				headers: {
+					'Authorization': `Bearer ${user.token}`,
+					'Content-Type': 'application/json'
+				}
 			})
 			const readableResult = await result.json()
 			setUserInfos(readableResult)
@@ -107,6 +98,14 @@ const UserSettings = ({ user, setUser }) => {
 						setUserInfos(prev => ({
 							...prev,
 							longitude: Number(e.target.value)
+						}))} />
+				</label>
+
+				<label> Describe yourself:
+					<input type="text" id="userDescription" value={userInfos.description} onChange={e =>
+						setUserInfos(prev => ({
+							...prev,
+							description: e.target.value
 						}))} />
 				</label>
 
