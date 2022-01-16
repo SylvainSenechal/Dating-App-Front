@@ -34,6 +34,8 @@ const FindingLove = ({ user, userInfos }) => {
 		description: ""
 	})
 
+	const [matched, setMatched] = useState(false)
+
 	useEffect(() => {
 		async function getNewProfile() {
 			console.log("user token", user.token)
@@ -69,6 +71,10 @@ const FindingLove = ({ user, userInfos }) => {
 		console.log(result)
 		const readableResult = await result.json()
 		console.log(readableResult)
+		if (readableResult.message === "You matched !") {
+			console.log("You both matched !")
+			setMatched(true)
+		}
 	}
 
 	const swipeRight = () => {
@@ -79,6 +85,15 @@ const FindingLove = ({ user, userInfos }) => {
 		swipe(0)
 	}
 
+	const MatchedComponent = () => {
+		if (matched) {
+			return (
+				<div >
+					Congralutation, you just matched somebody, click here(TODO) to see your matches
+				</div>
+			)
+		}
+	}
 
 	return (
 		<div id="loveFinder">
@@ -95,6 +110,9 @@ const FindingLove = ({ user, userInfos }) => {
 			<div id="swipeLeft">
 				<button onClick={swipeLeft}> Hate </button>
 			</div>
+
+			{MatchedComponent()}
+
 		</div>
 	)
 }
