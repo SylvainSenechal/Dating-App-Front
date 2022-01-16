@@ -28,6 +28,7 @@ const FindingLove = ({ user, userInfos }) => {
 	// }, []);
 
 	const [loveTarget, setLoveTarget] = useState({
+		id: -1,
 		name: "",
 		age: 0,
 		description: ""
@@ -36,7 +37,7 @@ const FindingLove = ({ user, userInfos }) => {
 	useEffect(() => {
 		async function getNewProfile() {
 			console.log("user token", user.token)
-			const result = await fetch(`${envData.apiURL}/users/${sub}/findlove`, {
+			const result = await fetch(`${envData.apiURL}/users/${sub}/findlover`, {
 				method: 'GET',
 				headers: { 'Authorization': `Bearer ${user.token}` },
 			})
@@ -56,8 +57,27 @@ const FindingLove = ({ user, userInfos }) => {
 		getNewProfile()
 	}, [])
 
+	const swipe = async love => {
+		const result = await fetch(`${envData.apiURL}/users/${sub}/loves/${loveTarget.id}`, {
+			method: 'POST',
+			headers: {
+				'Authorization': `Bearer ${user.token}`,
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ swiper: sub, swiped: loveTarget.id, love: love })
+		})
+		console.log(result)
+		const readableResult = await result.json()
+		console.log(readableResult)
+	}
 
+	const swipeRight = () => {
+		swipe(1)
+	}
 
+	const swipeLeft = () => {
+		swipe(0)
+	}
 
 
 	return (
@@ -69,7 +89,12 @@ const FindingLove = ({ user, userInfos }) => {
 			<div> Target Age: {loveTarget.age} </div>
 			<div> Target Description: {loveTarget.description} </div>
 
-
+			<div id="swipeRight">
+				<button onClick={swipeRight}> Love </button>
+			</div>
+			<div id="swipeLeft">
+				<button onClick={swipeLeft}> Hate </button>
+			</div>
 		</div>
 	)
 }
