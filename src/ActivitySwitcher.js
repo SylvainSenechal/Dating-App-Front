@@ -1,24 +1,21 @@
 import { useState, useEffect } from 'react';
 
 const ActivitySwitcher = ({ user, setUser }) => {
-	// console.log(user)
-
 	const showProfile = () => {
-		console.log("switch profiler")
-		console.log(user)
 		setUser(prev => ({ ...prev, activity: "user profile" }))
-		console.log(user)
 	}
 
 	const showLoveFinder = () => {
-		console.log("switch love finder")
-		console.log(user)
 		setUser(prev => ({ ...prev, activity: "finding love" }))
-		console.log(user)
-
 	}
 
+	const showMatches = () => {
+		setUser(prev => ({ ...prev, activity: "matches" }))
+	}
 
+	const showInsights = () => {
+		setUser(prev => ({ ...prev, activity: "insights" }))
+	}
 
 	return (
 		<div id="activitySwitcher">
@@ -28,8 +25,11 @@ const ActivitySwitcher = ({ user, setUser }) => {
 			<div id="profile">
 				<button onClick={showProfile}> profile </button>
 			</div>
+			<div id="matches">
+				<button onClick={showMatches}> matches </button>
+			</div>
 			<div id="insights">
-				<button onClick={showProfile}> insights </button>
+				<button onClick={showInsights}> insights </button>
 			</div>
 		</div>
 	)

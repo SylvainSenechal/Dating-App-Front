@@ -3,6 +3,8 @@ import ImageUploader from './ImageUploader';
 import FindingLove from './FindingLove';
 import ActivitySwitcher from './ActivitySwitcher';
 import UserSettings from './UserSettings';
+import Insights from './Insights';
+import Matches from './Matches';
 
 const Dashboard = ({ user, setUser }) => {
   // console.log(user)
@@ -60,6 +62,25 @@ const Dashboard = ({ user, setUser }) => {
         <div id="dashboard">
           <div id="display">
             <UserSettings user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
+          </div>
+          <ActivitySwitcher user={user} setUser={setUser} />
+        </div>
+      )
+    } else if (user.activity === "insights") {
+      return (
+        <div id="dashboard">
+          <div id="display">
+            <Insights user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
+          </div>
+          <ActivitySwitcher user={user} setUser={setUser} />
+        </div>
+      )
+
+    } else if (user.activity === "matches") {
+      return (
+        <div id="dashboard">
+          <div id="display">
+            <Matches user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
           </div>
           <ActivitySwitcher user={user} setUser={setUser} />
         </div>
