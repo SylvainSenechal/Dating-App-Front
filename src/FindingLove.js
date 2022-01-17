@@ -35,6 +35,7 @@ const FindingLove = ({ user, userInfos }) => {
 	})
 
 	const [matched, setMatched] = useState(false)
+	const [findNewLover, setFindNewLover] = useState(0)
 
 	useEffect(() => {
 		async function getNewProfile() {
@@ -50,6 +51,12 @@ const FindingLove = ({ user, userInfos }) => {
 
 			if (readableResult.detailed_error === "SqliteError(NotFound)") {
 				console.log("No potential lover found") // TODO : handle this better ?
+				setLoveTarget({
+					id: -1,
+					name: "",
+					age: 0,
+					description: ""
+				})
 			}
 			if (result.status === 200) {
 				setLoveTarget(readableResult)
@@ -57,7 +64,7 @@ const FindingLove = ({ user, userInfos }) => {
 		}
 
 		getNewProfile()
-	}, [])
+	}, [findNewLover])
 
 	const swipe = async love => {
 		const result = await fetch(`${envData.apiURL}/users/${sub}/loves/${loveTarget.id}`, {
@@ -79,10 +86,12 @@ const FindingLove = ({ user, userInfos }) => {
 
 	const swipeRight = () => {
 		swipe(1)
+		setFindNewLover(value => value + 1)
 	}
 
 	const swipeLeft = () => {
 		swipe(0)
+		setFindNewLover(value => value + 1)
 	}
 
 	const MatchedComponent = () => {
