@@ -35,7 +35,7 @@ const FindingLove = ({ user, userInfos }) => {
 		age: 0,
 		description: ""
 	})
-	const [ImageIdShawn, setImageIdShawn] = useState(0)
+	const [ImageIdShown, setImageIdShown] = useState(0)
 	const [imagesTarget, setImagesTarget] = useState([
 		"https://picsum.photos/100/1200",
 		"https://picsum.photos/200/1200",
@@ -109,20 +109,17 @@ const FindingLove = ({ user, userInfos }) => {
 	const showTargetDetails = async () => {
 		// todo
 		const im = document.getElementById("targetImage")
-		console.log(im)
-
-		im.src = "https://picsum.photos/100/1200"
 	}
-	
+
 	const clickImage = e => {
 		const xPosition = e.clientX / e.target.clientWidth
 		if (xPosition < 0.4) {
-			setImageIdShawn(prev => Math.max(prev - 1, 0))
+			setImageIdShown(prev => Math.max(prev - 1, 0))
 		}
 		if (xPosition > 0.6) {
-			setImageIdShawn(prev => Math.min(prev + 1, nbImages - 1))
+			setImageIdShown(prev => Math.min(prev + 1, nbImages - 1))
 		}
-		console.log(ImageIdShawn)
+		console.log(ImageIdShown)
 	}
 
 	const MatchedComponent = () => {
@@ -137,17 +134,23 @@ const FindingLove = ({ user, userInfos }) => {
 
 	return (
 		<div id="loveFinder">
-				<img id="targetImage" onClick={clickImage} src={imagesTarget[ImageIdShawn]} width="100" />
-			<div id="targetOverview">
-				<div> {loveTarget.name} : {loveTarget.age} </div>
-				<div> Target Description: {loveTarget.description} </div> {/* TODO : truncate the string to 100 ~chars */}
-				<div id="actionButtons">
-					<button onClick={swipeLeft}> Hate </button>
-					<button onClick={showTargetDetails}> Details </button>
-					<button onClick={swipeRight}> Love </button>
+			<div id="dotImage">
+				{imagesTarget.map((_, id) => (
+					id === ImageIdShown ? <div id="currentImage"> o </div> : <div> o </div>
+				))}
+			</div>
+			<div id="imageAndInfos">
+				<img id="targetImage" onClick={clickImage} src={imagesTarget[ImageIdShown]} width="100" />
+				<div id="targetOverview">
+					<div> {loveTarget.name} : {loveTarget.age} </div>
+					<div> Target Description: {loveTarget.description} </div> {/* TODO : truncate the string to 100 ~chars */}
+					<div id="actionButtons">
+						<button onClick={swipeLeft}> Hate </button>
+						<button onClick={showTargetDetails}> Details </button>
+						<button onClick={swipeRight}> Love </button>
+					</div>
 				</div>
 			</div>
-
 
 			{MatchedComponent()}
 

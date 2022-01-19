@@ -2,15 +2,30 @@ import { useState, useEffect } from 'react';
 import { envData } from './App';
 
 const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
-	console.log("hehe")
 	console.log(userInfos)
-
+	
 	const tokenData64URL = user.token.split('.')[1]
 	const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
 	const tokenPayload = JSON.parse(atob(tokenB64))
 	const { name, sub, iat, exp } = tokenPayload
 
-	console.log(userInfos)
+	const [userModified, setUserModified] = useState(false)
+	const [userInfosModel, setUserInfosModel] = useState({ // Note : also update the model in user settings
+    id: -1,
+    age: 0,
+    password: "",
+    name: "",
+    email: "",
+    gender: "",
+    looking_for: "",
+    latitude: 0,
+    longitude: 0,
+    search_radius: 0,
+    looking_for_age_min: 0,
+    looking_for_age_max: 0,
+    description: ""
+  })
+
 
 	useEffect(() => {
 		async function getUserInfos() {
@@ -23,6 +38,8 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 			})
 			const readableResult = await result.json()
 			setUserInfos(readableResult)
+			setUserInfosModel(readableResult)
+			setUserModified(false)
 		}
 
 		getUserInfos();
@@ -42,126 +59,142 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 		}
 	}
 
+	useEffect(() => {
+		let modified = false
+		for (const [key, val] of Object.entries(userInfos)) {
+			if (val != userInfosModel[key]) {
+				console.log(key, val, userInfosModel[key])
+				modified = true
+				break
+			}
+		}
+		setUserModified(modified)
+	}, [userInfos])
+
+
+	// TODO : bouton update change color when a change happened 
 	// s'assurer qu'on ne peut que show son propre profile
 	return (
 		<div id="userProfile">
-			<button onClick={updateUser}> update user </button>
-
 			<div id="privateInfos">
 				Private infos
-				<label> Email:
+
+				<div className="inputsAlign" id="email">
+					<label> Email: </label>
 					<input type="text" id="userMail" value={userInfos.email} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							email: e.target.value
 						}))} />
-				</label>
+				</div>
 			</div>
 
 			<div id="publicInfos">
 				Public infos
 
-				<label> Name:
+				<div className="inputsAlign" id="name">
+					<label> Name:	</label>
 					<input type="text" id="userName" value={userInfos.name} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							name: e.target.value
 						}))} />
-				</label>
+				</div>
 
-				<label> Age:
+				<div className="inputsAlign" id="age">
+					<label> Age:	</label>
 					<input type="number" id="userAge" value={userInfos.age} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							age: Number(e.target.value)
 						}))} />
-				</label>
+				</div>
 
-				<label> Gender:
+				<div className="inputsAlign" id="gender">
+					<label> Gender:	</label>
 					<input type="text" id="userGender" value={userInfos.gender} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							gender: e.target.value
 						}))} />
-				</label>
+				</div>
 
-				<label> Position latitude:
+				<div className="inputsAlign" id="latitude">
+					<label> Position latitude:	</label>
 					<input type="number" id="userLatitude" value={userInfos.latitude} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							latitude: Number(e.target.value)
 						}))} />
-				</label>
+				</div>
 
-				<label> Position longitude:
+				<div className="inputsAlign" id="longitude">
+					<label> Position longitude:	</label>
 					<input type="number" id="userLongitude" value={userInfos.longitude} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							longitude: Number(e.target.value)
 						}))} />
-				</label>
+				</div>
 
-				<label> Describe yourself:
+				<div className="inputsAlign" id="description">
+					<label> Describe yourself:	</label>
 					<input type="text" id="userDescription" value={userInfos.description} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							description: e.target.value
 						}))} />
-				</label>
-
-
-				{/* <label> Enter your genra:
-					<select type="genra" id="userGenra" value={userInfos.genra} onChange={e =>
-						setUserInfos(prev => ({
-							...prev,
-							genra: e.target.value
-						}))}>
-						<option value="male"> male </option>
-						<option value="female"> female </option>
-						<option value="other"> other </option>
-					</select>
-				</label> */}
+				</div>
 			</div>
 
 			<div id="matchingSettings">
 				Matching settings
-				<label> Looking for:
+
+				<div className="inputsAlign" id="lookingFor">
+					<label> Looking for:	</label>
 					<input type="text" id="userLookingFor" value={userInfos.looking_for} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							looking_for: e.target.value
 						}))} />
-				</label>
+				</div>
 
-				<label> Search Radius, KM:
+				<div className="inputsAlign" id="searchRadius">
+					<label> Search Radius, KM:	</label>
 					<input type="number" id="userSearchRadius" value={userInfos.search_radius} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							search_radius: Number(e.target.value)
 						}))} />
-				</label>
+				</div>
 
-				<label> Looking for age min:
+				<div className="inputsAlign" id="ageMin">
+					<label> Looking for age min:	</label>
 					<input type="number" id="userLookingForMin" value={userInfos.looking_for_age_min} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							looking_for_age_min: Number(e.target.value)
 						}))} />
-				</label>
+				</div>
 
-				<label> Looking for age max:
+				<div className="inputsAlign" id="ageMax">
+					<label> Looking for age max:	</label>
 					<input type="number" id="userLookingForMax" value={userInfos.looking_for_age_max} onChange={e =>
 						setUserInfos(prev => ({
 							...prev,
 							looking_for_age_max: Number(e.target.value)
 						}))} />
-				</label>
+				</div>
 			</div>
-			user profile :
+
+			TO REMOVE.. :
 			<div>{userInfos.id} </div>
 			<div>{userInfos.age} </div>
-			<div>{userInfos.password} </div>
+			<div id="eee">{userInfos.password} </div>
 			<div>{userInfos.name} </div>
+
+			{userModified ? <button id="doModifs" onClick={updateUser}> update user </button> : <button onClick={updateUser}> update user </button>}
+
 		</div>
 	)
 }

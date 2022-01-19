@@ -11,7 +11,7 @@ const Dashboard = ({ user, setUser }) => {
   const [date, setDate] = useState(Math.floor(Date.now() / 1000))
   const [refresh, setRefresh] = useState(0)
 
-  const [userInfos, setUserInfos] = useState({
+  const [userInfos, setUserInfos] = useState({ // Note : also update the model in user settings
     id: -1,
     age: 0,
     password: "",
