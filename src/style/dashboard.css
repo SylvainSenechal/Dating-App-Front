@@ -6,7 +6,7 @@
   grid-template-rows: 9fr 1fr;
   grid-template-columns: 1fr;
   grid-template-areas: 'display'
-                       'activitySwitcher';
+    'activitySwitcher';
   justify-items: stretch;
   align-items: center;
   justify-content: start;
@@ -35,11 +35,55 @@
   flex-direction: column;
 }
 
-#userProfile > div {
+#userProfile>div {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
 }
+
+#loveFinder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+}
+
+#targetImage {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+}
+
+#targetOverview {
+  z-index: 1;
+  color: white;
+  font-size: 2em;
+}
+
+#actionButtons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  margin-bottom: 10px;
+  margin-top: 20px;
+  /* margin-left: 10px;
+  margin-right: 10px; */
+}
+
+#actionButtons>button {
+  cursor: pointer;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 2em;
+  color: #FFFFFF;
+  background-color: #4eb5f1;
+  border: none;
+  padding: 5px 15px;
+  font-size: 1em;
+}
+
 
 /* #dashboardIn {
   display: grid;

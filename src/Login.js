@@ -75,6 +75,10 @@ const Login = ({ setUser }) => {
     }
   }
 
+  const showInsights = () => {
+    setUser(prev => ({ ...prev, activity: "insights" }))
+  }
+
   const LoginComponent = () => {
     return (
       <div className="logInfo" style={{ "--order": 1 }}>
@@ -84,7 +88,7 @@ const Login = ({ setUser }) => {
           <input type="text" name="email" id="emailLogin" value={emailLogin} onChange={e => setEmailLogin(e.target.value)} required />
           <label htmlFor="password"> Enter your password: </label>
           <input type="password" name="password" id="passwordLogin" value={passwordLogin} onChange={e => setPasswordLogin(e.target.value)} required />
-          <label htmlFor="keepConnectede"> Keep me connected :</label>
+          <label htmlFor="keepConnected"> Keep me connected :</label>
           <input
             name="keepConnected"
             type="checkbox"
@@ -113,7 +117,7 @@ const Login = ({ setUser }) => {
             <div> {messageRegister} </div>
           </div>
 
-        {LoginComponent()}
+          {LoginComponent()}
         </div>
         {/* < Footer /> */}
       </div>
@@ -151,10 +155,17 @@ const Login = ({ setUser }) => {
               <label htmlFor="age"> Enter your age: </label>
               <input type="number" name="age" id="ageRegister" value={registerData.age} onChange={e => setRegisterData(prev => ({ ...prev, age: Number(e.target.value) }))} required />
               <label htmlFor="gender"> Enter your gender: </label>
-              <input type="text" name="gender" id="genderRegister" value={registerData.gender} onChange={e => setRegisterData(prev => ({ ...prev, gender: e.target.value }))} required />
+              <div id="gender pick">
+                <button onClick={() => setRegisterData(prev => ({...prev, gender: "male"}))}> male </button>
+                <button onClick={() => setRegisterData(prev => ({...prev, gender: "female"}))}> female </button>
+              </div>
+              {/* <input type="text" name="gender" id="genderRegister" value={registerData.gender} onChange={e => setRegisterData(prev => ({ ...prev, gender: e.target.value }))} required /> */}
               <label htmlFor="lookingFor"> Enter who you are looking for: </label>
-              {/* TODO constraint to male / female  */}
-              <input type="text" name="lookingFor" id="lookingForRegister" value={registerData.lookingFor} onChange={e => setRegisterData(prev => ({ ...prev, looking_for: e.target.value }))} required />
+              <div id="looking_for pick">
+                <button onClick={() => setRegisterData(prev => ({...prev, looking_for: "male"}))}> male </button>
+                <button onClick={() => setRegisterData(prev => ({...prev, looking_for: "female"}))}> female </button>
+              </div>
+              {/* <input type="text" name="lookingFor" id="lookingForRegister" value={registerData.lookingFor} onChange={e => setRegisterData(prev => ({ ...prev, looking_for: e.target.value }))} required /> */}
               <input type="submit" value="Register" />
             </form>
             <button onClick={nextStep}> nextStep </button>
@@ -175,44 +186,3 @@ const Login = ({ setUser }) => {
 }
 
 export default Login;
-
-
-
-
-
-// return (
-//   <div className="LoginPage">
-//     <div className="formsLoginRegister" >
-//       <div className="logInfo" style={{ "--order": 0 }}>
-//         <p className="borderLine"> Register </p>
-//         <form onSubmit={handleSubmitRegistration}>
-//           <label htmlFor="pseudo"> Enter your name: </label>
-//           <input type="text" name="pseudo" id="pseudoRegister" value={pseudoRegister} onChange={e => setPseudoRegister(e.target.value)} required />
-//           <label htmlFor="password"> Enter your password: </label>
-//           <input type="password" name="password" id="passwordRegister" value={passwordRegister} onChange={e => setPasswordRegister(e.target.value)} required />
-//           <input type="submit" value="Register" />
-//         </form>
-//         <div> {messageRegister} </div>
-//       </div>
-
-//       <div className="logInfo" style={{ "--order": 1 }}>
-//         <p className="borderLine"> Login </p>
-//         <form onSubmit={handleSubmitLogin}>
-//           <label htmlFor="pseudo"> Enter your name: </label>
-//           <input type="text" name="pseudo" id="pseudoLoginh" value={pseudoLogin} onChange={e => setPseudoLogin(e.target.value)} required />
-//           <label htmlFor="password"> Enter your password: </label>
-//           <input type="password" name="password" id="passwordLogin" value={passwordLogin} onChange={e => setPasswordLogin(e.target.value)} required />
-//           <label htmlFor="keepConnectede"> Keep me connected :</label>
-//           <input
-//             name="keepConnected"
-//             type="checkbox"
-//             checked={keepConnected}
-//             onChange={e => setKeepConnected(e.target.checked)}
-//           />
-//           <input type="submit" value="Register" />
-//         </form>
-//       </div>
-//     </div>
-//     {/* < Footer /> */}
-//   </div>
-// )
