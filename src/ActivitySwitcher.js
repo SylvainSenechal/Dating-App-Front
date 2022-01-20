@@ -19,11 +19,11 @@ const ActivitySwitcher = ({ user, setUser }) => {
 
 	return (
 		<div id="activitySwitcher">
-			<div id="matching">
-				<button onClick={showLoveFinder}> find love </button>
-			</div>
 			<div id="profile">
 				<button onClick={showProfile}> profile </button>
+			</div>
+			<div id="matching">
+				<button onClick={showLoveFinder}> find love </button>
 			</div>
 			<div id="matches">
 				<button onClick={showMatches}> matches </button>

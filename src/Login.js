@@ -1,8 +1,12 @@
 import { useState } from 'react';
+import { useEffect } from 'react/cjs/react.development';
 // import Footer from './Footer'
 import { envData } from './App';
 
 const Login = ({ setUser }) => {
+  const [emailLogin, setEmailLogin] = useState("")
+  const [passwordLogin, setPasswordLogin] = useState("")
+
   const [stepRegister, setStepRegister] = useState("email") // 1. email 2. password 3. other infos (name, age)
   const [registerData, setRegisterData] = useState({
     email: "",
@@ -14,24 +18,26 @@ const Login = ({ setUser }) => {
     gender: "",
     looking_for: ""
   })
-
-  const [emailLogin, setEmailLogin] = useState("")
-  const [passwordLogin, setPasswordLogin] = useState("")
-
   const [messageRegister, setMessageRegister] = useState("")
   const [keepConnected, setKeepConnected] = useState(false)
+
   console.log(envData)
   console.log(registerData)
 
-  navigator.geolocation.getCurrentPosition(position => {
-    setRegisterData(prev => ({ ...prev, latitude: position.coords.latitude, longitude: position.coords.longitude }))
-  })
+  useEffect(() => {
+    const geo = navigator.geolocation
+    geo.getCurrentPosition(position => {
+      console.log(position)
+      const { latitude, longitude } = position.coords;
+      setRegisterData(prev => ({ ...prev, latitude: latitude, longitude: longitude }))
+    })
+  }, [])
 
   const handleSubmitRegistration = async event => {
     event.preventDefault()
 
     const result = await fetch(`${envData.apiURL}/users`, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(registerData)
     })
@@ -43,14 +49,20 @@ const Login = ({ setUser }) => {
     event.preventDefault()
 
     const result = await fetch(`${envData.apiURL}/auth`, {
-      method: 'POST', // *GET, POST, PUT, DELETE, etc.
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email: emailLogin, password: passwordLogin })
     })
     const readableResult = await result.json()
 
     if (result.status === 200) { // login successfull
-      setUser(prev => ({ ...prev, token: readableResult.token, refreshToken: readableResult.refresh_token, loggedIn: true, keepConnected: keepConnected }))
+      setUser(prev => ({
+        ...prev,
+        token: readableResult.token,
+        refreshToken: readableResult.refresh_token,
+        loggedIn: true,
+        keepConnected: keepConnected
+      }))
       if (keepConnected) {
         window.localStorage.setItem('refreshToken', readableResult.refresh_token)
       } else {
@@ -73,10 +85,6 @@ const Login = ({ setUser }) => {
     } else if (stepRegister === "password") {
       setStepRegister(prev => ("email"))
     }
-  }
-
-  const showInsights = () => {
-    setUser(prev => ({ ...prev, activity: "insights" }))
   }
 
   const LoginComponent = () => {
@@ -156,14 +164,14 @@ const Login = ({ setUser }) => {
               <input type="number" name="age" id="ageRegister" value={registerData.age} onChange={e => setRegisterData(prev => ({ ...prev, age: Number(e.target.value) }))} required />
               <label htmlFor="gender"> Enter your gender: </label>
               <div id="gender pick">
-                <button onClick={() => setRegisterData(prev => ({...prev, gender: "male"}))}> male </button>
-                <button onClick={() => setRegisterData(prev => ({...prev, gender: "female"}))}> female </button>
+                <button onClick={() => setRegisterData(prev => ({ ...prev, gender: "male" }))}> male </button>
+                <button onClick={() => setRegisterData(prev => ({ ...prev, gender: "female" }))}> female </button>
               </div>
               {/* <input type="text" name="gender" id="genderRegister" value={registerData.gender} onChange={e => setRegisterData(prev => ({ ...prev, gender: e.target.value }))} required /> */}
               <label htmlFor="lookingFor"> Enter who you are looking for: </label>
               <div id="looking_for pick">
-                <button onClick={() => setRegisterData(prev => ({...prev, looking_for: "male"}))}> male </button>
-                <button onClick={() => setRegisterData(prev => ({...prev, looking_for: "female"}))}> female </button>
+                <button onClick={() => setRegisterData(prev => ({ ...prev, looking_for: "male" }))}> male </button>
+                <button onClick={() => setRegisterData(prev => ({ ...prev, looking_for: "female" }))}> female </button>
               </div>
               {/* <input type="text" name="lookingFor" id="lookingForRegister" value={registerData.lookingFor} onChange={e => setRegisterData(prev => ({ ...prev, looking_for: e.target.value }))} required /> */}
               <input type="submit" value="Register" />

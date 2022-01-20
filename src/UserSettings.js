@@ -3,7 +3,9 @@ import { envData } from './App';
 
 const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 	console.log(userInfos)
-	
+	// TODO : watch out you should be modifying some user copy and only the real user info once the update is done,
+	// here even if not clicking update button, if you do some change userInfos will be changed for the rest of the fronted..
+
 	const tokenData64URL = user.token.split('.')[1]
 	const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
 	const tokenPayload = JSON.parse(atob(tokenB64))
@@ -11,20 +13,20 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 
 	const [userModified, setUserModified] = useState(false)
 	const [userInfosModel, setUserInfosModel] = useState({ // Note : also update the model in user settings
-    id: -1,
-    age: 0,
-    password: "",
-    name: "",
-    email: "",
-    gender: "",
-    looking_for: "",
-    latitude: 0,
-    longitude: 0,
-    search_radius: 0,
-    looking_for_age_min: 0,
-    looking_for_age_max: 0,
-    description: ""
-  })
+		id: -1,
+		age: 0,
+		password: "",
+		name: "",
+		email: "",
+		gender: "",
+		looking_for: "",
+		latitude: 0,
+		longitude: 0,
+		search_radius: 0,
+		looking_for_age_min: 0,
+		looking_for_age_max: 0,
+		description: ""
+	})
 
 
 	useEffect(() => {
@@ -56,6 +58,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 		})
 		if (result.status !== 200) {
 			console.log("error updating profile : ", await result.json()) // todo handle this
+		} else {
+			setUserModified(userInfos)
+			setUserModified(false)
 		}
 	}
 
@@ -77,8 +82,8 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 	return (
 		<div id="userProfile">
 			<div id="privateInfos">
-				Private infos
-
+				<p className='updateCategories'>Private infos</p>
+ 
 				<div className="inputsAlign" id="email">
 					<label> Email: </label>
 					<input type="text" id="userMail" value={userInfos.email} onChange={e =>
@@ -90,7 +95,7 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 			</div>
 
 			<div id="publicInfos">
-				Public infos
+				<p className='updateCategories'>Public infos</p>
 
 				<div className="inputsAlign" id="name">
 					<label> Name:	</label>
@@ -148,7 +153,7 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 			</div>
 
 			<div id="matchingSettings">
-				Matching settings
+				<p className='updateCategories'>Matching settings</p>
 
 				<div className="inputsAlign" id="lookingFor">
 					<label> Looking for:	</label>
@@ -193,7 +198,7 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 			<div id="eee">{userInfos.password} </div>
 			<div>{userInfos.name} </div>
 
-			{userModified ? <button id="doModifs" onClick={updateUser}> update user </button> : <button onClick={updateUser}> update user </button>}
+			{userModified ? <button className='btnUpdateUser' id="updatesTodo" onClick={updateUser}> update user </button> : <button className='btnUpdateUser' onClick={updateUser}> update user </button>}
 
 		</div>
 	)

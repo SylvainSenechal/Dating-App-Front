@@ -136,11 +136,11 @@ const FindingLove = ({ user, userInfos }) => {
 		<div id="loveFinder">
 			<div id="dotImage">
 				{imagesTarget.map((_, id) => (
-					id === ImageIdShown ? <div id="currentImage"> o </div> : <div> o </div>
+					id === ImageIdShown ? <div id="currentImage" key={id}> o </div> : <div key={id}> o </div>
 				))}
 			</div>
 			<div id="imageAndInfos">
-				<img id="targetImage" onClick={clickImage} src={imagesTarget[ImageIdShown]} width="100" />
+				<img id="targetImage" onClick={clickImage} src={imagesTarget[ImageIdShown]}/>
 				<div id="targetOverview">
 					<div> {loveTarget.name} : {loveTarget.age} </div>
 					<div> Target Description: {loveTarget.description} </div> {/* TODO : truncate the string to 100 ~chars */}

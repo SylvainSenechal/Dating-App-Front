@@ -9,10 +9,6 @@ const envData = {
 }
 export { envData }
 
-// const USER_ACTIVITIES = {
-//   findingLove: 1
-// }
-
 const App = props => {
   console.log('App props : ', props)
 
@@ -23,12 +19,6 @@ const App = props => {
     refreshToken: "",
     activity: "finding love"
   })
-
-  // console.log(user)
-  // console.log(envData)
-  // console.log(document.body.clientWidth)
-  // console.log(document.body.offsetWidth)
-  // console.log(document.body.scrollWidth)
 
   useEffect(() => { // This is only to restore the "keep me connected" session
     const restoreSession = async () => {

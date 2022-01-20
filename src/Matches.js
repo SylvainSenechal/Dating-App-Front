@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import { envData } from './App';
+import Discussion from './Discussion';
 
 const Matches = ({ user, setUser, userInfos, setUserInfos }) => {
   const [lovers, setLovers] = useState([])
-	const tokenData64URL = user.token.split('.')[1]
-	const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
-	const tokenPayload = JSON.parse(atob(tokenB64))
-	const { name, sub, iat, exp } = tokenPayload
+  const [loveID, setLoveID] = useState(0)
+
+  const tokenData64URL = user.token.split('.')[1]
+  const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
+  const tokenPayload = JSON.parse(atob(tokenB64))
+  const { name, sub, iat, exp } = tokenPayload
 
   useEffect(() => {
     const getMatchesList = async () => {
@@ -25,20 +28,26 @@ const Matches = ({ user, setUser, userInfos, setUserInfos }) => {
     getMatchesList()
   }, [])
 
+  const chatWith = e => {
+    setLoveID(Number(e.currentTarget.dataset.index))
+  }
 
   // TODO : pinned lover feature
   return (
     <div id="matches">
-      my matches :
-      {
-        lovers.map(lover => (
-          <div className="lover" key={lover.id}>
-            <div > {lover.name} </div>
-            <div > {lover.age} </div>
-            <div > {lover.description} </div>
-          </div>
-        ))
-      }
+      You matched with these amazing people !
+      <div id='matchesPreview'>
+        {
+          lovers.map(lover => (
+            <div className="lover" data-index={lover.love_id} onClick={chatWith} key={lover.love_id} >
+              <img id="previewImage" src="https://picsum.photos/50/100" />
+              <div > {lover.name} </div>
+            </div>
+          ))
+        }
+      </div>
+
+      <Discussion user={user} loveID={loveID} />
     </div>
   )
 }
