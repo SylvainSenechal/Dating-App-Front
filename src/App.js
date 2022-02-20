@@ -11,7 +11,6 @@ export { envData }
 
 const App = props => {
   console.log('App props : ', props)
-
   const [user, setUser] = useState({
     loggedIn: false,
     keepConnected: false,
@@ -19,6 +18,7 @@ const App = props => {
     refreshToken: "",
     activity: "finding love"
   })
+  console.log(user)
 
   useEffect(() => { // This is only to restore the "keep me connected" session
     const restoreSession = async () => {

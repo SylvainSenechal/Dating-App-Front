@@ -12,7 +12,7 @@
   row-gap: 10px;
 }
 
-#display {
+.display {
   grid-area: display;
   width: 100%;
   height: 100%;
@@ -43,11 +43,6 @@
   flex-direction: column;
   align-items: center;
   margin-bottom: 20px;
-}
-
-#loveFinder {
-  width: 100%;
-  height: 100%;
 }
 
 #imageAndInfos {
@@ -81,6 +76,13 @@
   padding-bottom: 13px;
   padding-top: 13px;
   font-size: 14px;
+}
+
+#noLoveFound {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 2em;
 }
 
 #dotImage {
@@ -129,13 +131,38 @@
   font-size: 1em;
 }
 
-#updatesTodo {
+#updatesUserToPerform {
   background-color: #2ea44f;
   cursor: pointer;
+  transition: 0.5s;
+  animation: shake 1s;
 }
 
-#updatesTodo:hover {
+@keyframes shake {
+  10%, 90% {
+    transform: translate3d(-1px, 0, 0);
+  }
+  
+  20%, 80% {
+    transform: translate3d(2px, 0, 0);
+  }
+
+  30%, 50%, 70% {
+    transform: translate3d(-4px, 0, 0);
+  }
+
+  40%, 60% {
+    transform: translate3d(4px, 0, 0);
+  }
+}
+
+#updatesUserToPerform:hover {
   background-color: #2c974b;
+}
+
+#deleteUser {
+  background-color: #ff0000;
+  cursor: pointer;
 }
 
 .btnUpdateUser {
@@ -166,155 +193,6 @@
 }
 
 .updateCategories {
-  font-size: 1.5em;;
+  font-size: 1.5em;
+  ;
 }
-
-
-
-/* #dashboardIn {
-  display: grid;
-  width: calc(100vw - 80px);
-  height: calc(100vh - 80px);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 1px 2px 5px rgb(0 0 0 / 15%);
-  border-radius: 40px;
-  grid-gap: 10px;
-  padding: 30px;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: 1fr 7fr 2fr;
-  grid-template-areas: 'infos infos search search showRequest logout'
-                        'friends friends wall wall wall wall'
-                        'legals legals footer footer footer footer';
-  justify-items: stretch;
-  align-items: center;
-  justify-content: start;
-} */
-
-/* #dashboardOut {
-  background: 
-  linear-gradient(155deg, rgba(220, 195, 235, 0.8), rgba(255,0,0,0) 40%),
-  linear-gradient(260deg, rgba(150,208,227, 0) 60%, rgba(150,208,227,0.8) 100%),
-  linear-gradient(340deg, rgba(176, 122, 208, 0.8), rgba(0,255,0,0) 40%);
-  padding: 40px; 
-}
-  
-#dashboardIn {
-  display: grid;
-  width: calc(100vw - 80px);
-  height: calc(100vh - 80px);
-  background: rgba(255, 255, 255, 0.15);
-  box-shadow: 1px 2px 5px rgb(0 0 0 / 15%);
-  border-radius: 40px;
-  grid-gap: 10px;
-  padding: 30px;
-  grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: 1fr 7fr 2fr;
-  grid-template-areas: 'infos infos search search showRequest logout'
-                        'friends friends wall wall wall wall'
-                        'legals legals footer footer footer footer';
-  justify-items: stretch;
-  align-items: center;
-  justify-content: start;
-}
-
-.dashboardElement {
-  background: rgba(255, 255, 255, 0.25);
-  box-shadow: 1px 2px 5px rgb(0 0 0 / 15%);
-  padding: 15px;
-  border-radius: 30px;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-}
-
-#infos {
-  grid-area: infos;
-}
-
-#search {
-  grid-area: search;
-  display: flex;
-}
-
-#logout {
-  grid-area: logout;
-}
-
-#friends {
-  grid-area: friends;
-}
-
-#showRequest {
-  grid-area: showRequest;
-}
-
-
-
-.ownPost:hover, .postFriend:hover {
-  background: gray;
-}
-
-.pseudoPost {
-  grid-area: pseudo;
-}
-.messagePost {
-  grid-area: message;
-  overflow-wrap: anywhere;
-}
-.likesPost {
-  grid-area: likes;
-  position: relative;
-}
-.likesPost > button {
-  background: none;
-  border: none;
-  cursor: pointer;
-}
-
-.listOfLikers {
-  display: none;
-}
-
-.likesPost:hover .listOfLikers{
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  background: white;
-  left: 25px;
-  z-index: 1;
-}
-
-.listOfLikers {
-  width: 100px;
-}
-
-#wall {
-  grid-area: wall;
-}
-
-#postMessage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#postMessage > * {
-  margin-right: 10px;
-}
-
-#postMessage > textarea {
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  box-shadow: 1px 1px 1px #999;
-}
-
-
-
-#legals {
-  grid-area: legals;
-}
-
-#footer {
-  grid-area: footer;
-} */

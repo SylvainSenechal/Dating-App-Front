@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
 
 const ActivitySwitcher = ({ user, setUser }) => {
-	const showProfile = () => {
+	const showProfile = e => {
+		e.preventDefault()
 		setUser(prev => ({ ...prev, activity: "user profile" }))
 	}
 
-	const showLoveFinder = () => {
+	const showLoveFinder = e => {
+		e.preventDefault()
 		setUser(prev => ({ ...prev, activity: "finding love" }))
 	}
 
-	const showMatches = () => {
+	const showMatches = e => {
+		e.preventDefault()
 		setUser(prev => ({ ...prev, activity: "matches" }))
 	}
 
-	const showInsights = () => {
+	const showInsights = e => {
+		e.preventDefault()
 		setUser(prev => ({ ...prev, activity: "insights" }))
 	}
 

@@ -3,8 +3,6 @@ import { envData } from './App';
 
 // Faire un composant view profile, pour moi ou autre personne
 const FindingLove = ({ user, userInfos }) => {
-	// TODO : add last activity date (seen x min ago ?)
-
 	const tokenData64URL = user.token.split('.')[1]
 	const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
 	const tokenPayload = JSON.parse(atob(tokenB64))
@@ -33,7 +31,8 @@ const FindingLove = ({ user, userInfos }) => {
 		id: -1,
 		name: "",
 		age: 0,
-		description: ""
+		description: "",
+		last_seen: "",
 	})
 	const [ImageIdShown, setImageIdShown] = useState(0)
 	const [imagesTarget, setImagesTarget] = useState([
@@ -61,16 +60,18 @@ const FindingLove = ({ user, userInfos }) => {
 			const readableResult = await result.json()
 			console.log(readableResult)
 
-			if (readableResult.detailed_error === "SqliteError(NotFound)") {
-				console.log("No potential lover found") // TODO : handle this better ?
+			if (result.status === 404) {
+				console.log("No potential lover found")
 				setLoveTarget({
 					id: -1,
 					name: "",
 					age: 0,
-					description: ""
+					description: "",
+					last_seen: ""
 				})
 			}
 			if (result.status === 200) {
+				console.log("Found a potential lover")
 				setLoveTarget(readableResult)
 			}
 		}
@@ -132,30 +133,71 @@ const FindingLove = ({ user, userInfos }) => {
 		}
 	}
 
-	return (
-		<div id="loveFinder">
-			<div id="dotImage">
-				{imagesTarget.map((_, id) => (
-					id === ImageIdShown ? <div id="currentImage" key={id}> o </div> : <div key={id}> o </div>
-				))}
+	// Thanks to : https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
+	const distanceKilometers = (lat1, lon1, lat2, lon2) => {
+		var R = 6371; // Radius of the earth in km
+		var dLat = deg2rad(lat2 - lat1);  // deg2rad below
+		var dLon = deg2rad(lon2 - lon1);
+		var a =
+			Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+			Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+			Math.sin(dLon / 2) * Math.sin(dLon / 2)
+			;
+		var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+		var d = R * c; // Distance in km
+		return d;
+	}
+
+	const deg2rad = deg => {
+		return deg * (Math.PI / 180)
+	}
+
+	const distanceTarget = Math.ceil(distanceKilometers(loveTarget.latitude, loveTarget.longitude, userInfos.latitude, userInfos.longitude))
+	const minuteLastSeen = Math.ceil((new Date() - new Date(loveTarget.last_seen)) / 1000 / 60)
+	let displayLastSeen = ""
+	if (minuteLastSeen < 60) {
+		displayLastSeen = `${minuteLastSeen} minutes ago`
+	} else if (minuteLastSeen < 1440) {
+		// const minuteRemainder = minuteLastSeen % 60
+		// displayLastSeen = `${Math.floor(minuteLastSeen / 60)}:${minuteRemainder} hours ago` // TODO : Do I wanna add this ?
+		displayLastSeen = `${Math.floor(minuteLastSeen / 60)} hours ago`
+	} else {
+		displayLastSeen = `${Math.floor(minuteLastSeen / 1440)} days ago`
+	}
+	if (loveTarget.id === -1) {
+		return (
+			<div id="display">
+				<div id='noLoveFound'> We could not find any profile fitting your matching settings 😔 </div>
 			</div>
-			<div id="imageAndInfos">
-				<img id="targetImage" onClick={clickImage} src={imagesTarget[ImageIdShown]}/>
-				<div id="targetOverview">
-					<div> {loveTarget.name} : {loveTarget.age} </div>
-					<div> Target Description: {loveTarget.description} </div> {/* TODO : truncate the string to 100 ~chars */}
-					<div id="actionButtons">
-						<button onClick={swipeLeft}> Hate </button>
-						<button onClick={showTargetDetails}> Details </button>
-						<button onClick={swipeRight}> Love </button>
+		)
+	} else {
+		return (
+			<div className="display">
+				<div id="dotImage">
+					{imagesTarget.map((_, id) => (
+						id === ImageIdShown ? <div id="currentImage" key={id}> o </div> : <div key={id}> o </div>
+					))}
+				</div>
+				<div id="imageAndInfos">
+					<img id="targetImage" onClick={clickImage} src={imagesTarget[ImageIdShown]} />
+					<div id="targetOverview">
+						<div className='targetInfos'> {loveTarget.name} : {loveTarget.age} </div>
+						<div className='targetInfos'> Target Description: {loveTarget.description} </div> {/* TODO : truncate the string to 100 ~chars */}
+						<div className='targetInfos'> {displayLastSeen} 👀 </div>
+						<div className='targetInfos'> Distance : {distanceTarget} km </div>
+						<div id="actionButtons">
+							<button onClick={swipeLeft}> Hate </button>
+							<button onClick={showTargetDetails}> Details </button>
+							<button onClick={swipeRight}> Love </button>
+						</div>
 					</div>
 				</div>
+
+				{MatchedComponent()}
+
 			</div>
-
-			{MatchedComponent()}
-
-		</div>
-	)
+		)
+	}
 }
 
 export default FindingLove;

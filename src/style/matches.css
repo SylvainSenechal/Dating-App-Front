@@ -3,11 +3,21 @@
     flex-direction: column;
 }
 
+#matchesWelcome {
+    margin: auto;
+    padding-top: 3px;
+}
+
 #matchesPreview {
     display: flex;
     flex-direction: row;
     overflow: auto;
     border-bottom: 1px solid #dadde1;
+    height: 160px;
+}
+
+#previewImage {
+    border-radius: 10px;
 }
 
 .lover {
@@ -17,4 +27,127 @@
     align-items: center;
     margin-top: 15px;
     margin-bottom: 15px;
+}
+
+
+#formPostMessage {
+    display: flex;
+    flex-direction: row;
+    border: thin solid grey;
+    border-radius: 15px;
+    width: 94%;
+    padding: 3px;
+    margin-left: 3%;
+    margin-top: auto;
+}
+
+#chatText {
+    border-radius: 15px;
+    border-width: thin;
+    display: flex;
+    flex-direction: row;
+    /* border: 1px solid grey; */
+    flex-grow: 2;
+    border: none;
+
+}
+
+#postMessageBtn {
+    border: 1px solid rgb(255, 0, 115);
+    border-radius: 15px;
+}
+
+#discussion {
+    /* margin-top: 1000px; */
+    overflow: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.ownMessagePosition {
+    margin-left: auto;
+}
+
+.ownMessagePosition, .otherMessagePosition {
+    width: 70%;
+}
+
+.message {
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-bottom: 1px;
+    border-radius: 5px; 
+    padding-left: 10px;
+      /* padding-top: 1px;
+    padding-bottom: 1px; */
+    color: white;
+}
+
+.ownMessage {
+    background-color: #00bfff;
+}
+
+.otherMessage {
+    background-color: #b0c4de;
+}
+
+.datetimeMessage {
+    margin-left: 5px;
+    font-size: 0.8em;
+    margin-top: -0.2em;
+    margin-bottom: 0.1em;
+}
+
+#previewDiscussion {
+    /* margin-top: 1000px; */
+    overflow: auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* List of discussion */
+
+#listOfDiscussionGreating {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 40px;
+}
+
+#ongoingDiscussions {
+    display: flex;
+    flex-direction: column;
+    /* align-items: center; */
+}
+
+.discussionBlocPreview {
+    all: unset;
+    cursor: pointer;
+
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #dadde1;
+    border-radius: 5px;
+}
+
+.discussionBlocPreview:hover {
+    transition: 1s;
+    background-color: rgb(239, 223, 223);
+}
+
+.previewName {
+    font-weight: bold;
+}
+
+/* General info on selected user for discussion */
+
+#generalInfosTargetDiscussion {
+    display: flex;
 }

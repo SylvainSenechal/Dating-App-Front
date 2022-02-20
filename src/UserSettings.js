@@ -31,6 +31,7 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 
 	useEffect(() => {
 		async function getUserInfos() {
+			console.log("GETIING USER INFOS")
 			const result = await fetch(`${envData.apiURL}/users/${sub}`, {
 				method: 'GET',
 				headers: {
@@ -64,11 +65,27 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 		}
 	}
 
+	const deleteUser = async () => {
+		const result = await fetch(`${envData.apiURL}/users/${sub}`, {
+			method: 'DELETE',
+			headers: {
+				'Authorization': `Bearer ${user.token}`,
+				'Content-Type': 'application/json'
+			}
+		})
+		if (result.status !== 200) {
+			console.log("error deleting profile : ", await result.json()) // todo handle this
+		} else {
+			console.log(result.json())
+		}
+	}
+
 	useEffect(() => {
 		let modified = false
 		for (const [key, val] of Object.entries(userInfos)) {
 			if (val != userInfosModel[key]) {
 				console.log(key, val, userInfosModel[key])
+				console.log("heeeee")
 				modified = true
 				break
 			}
@@ -80,7 +97,7 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 	// TODO : bouton update change color when a change happened 
 	// s'assurer qu'on ne peut que show son propre profile
 	return (
-		<div id="userProfile">
+		<div className="display" id="userProfile">
 			<div id="privateInfos">
 				<p className='updateCategories'>Private infos</p>
  
@@ -192,14 +209,8 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 				</div>
 			</div>
 
-			TO REMOVE.. :
-			<div>{userInfos.id} </div>
-			<div>{userInfos.age} </div>
-			<div id="eee">{userInfos.password} </div>
-			<div>{userInfos.name} </div>
-
-			{userModified ? <button className='btnUpdateUser' id="updatesTodo" onClick={updateUser}> update user </button> : <button className='btnUpdateUser' onClick={updateUser}> update user </button>}
-
+			{userModified ? <button className='btnUpdateUser' id="updatesUserToPerform" onClick={updateUser}> update user </button> : <button className='btnUpdateUser' onClick={updateUser}> update user </button>}
+			<button className='btnUpdateUser' id="deleteUser" onClick={deleteUser}> delete account </button>
 		</div>
 	)
 }

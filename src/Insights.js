@@ -11,6 +11,7 @@ const Insights = ({ user, setUser, userInfos, setUserInfos }) => {
    const [rejections, setRejections] = useState(0)
    const [loving, setLoving] = useState(0)
    const [rejecting, setRejecting] = useState(0)
+   console.log("OUOUI")
 
 
    useEffect(() => {
@@ -67,7 +68,7 @@ const Insights = ({ user, setUser, userInfos, setUserInfos }) => {
       getUserStatistics();
    }, []);
    return (
-      <div>
+      <div className="display">
          insights :
          <div>Number of person fitting your search criterion :</div>
          <div>You were swiped {loved + rejections} times </div>
