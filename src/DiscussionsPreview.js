@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react';
-import { envData } from './App';
 
 const DiscussionsPreview = ({ user, messages, socket, setLoveID }) => {
   const tokenData64URL = user.token.split('.')[1]

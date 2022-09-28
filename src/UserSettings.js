@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { envData } from './App';
+import { get, post, put, deleteReq } from './utils/Requests';
 
 const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 	console.log(userInfos)
@@ -32,51 +32,34 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 	useEffect(() => {
 		async function getUserInfos() {
 			console.log("GETIING USER INFOS")
-			const result = await fetch(`${envData.apiURL}/users/${sub}`, {
-				method: 'GET',
-				headers: {
-					'Authorization': `Bearer ${user.token}`,
-					'Content-Type': 'application/json'
-				}
-			})
-			const readableResult = await result.json()
-			setUserInfos(readableResult)
-			setUserInfosModel(readableResult)
-			setUserModified(false)
+			try {
+				const result = await get(`/users/${sub}`, user.token)
+				setUserInfos(result)
+				setUserInfosModel(result)
+				setUserModified(false)
+			} catch (error) {
+				console.log('get user infos error : ' + error)
+			}
 		}
 
 		getUserInfos();
 	}, []);
 
 	const updateUser = async () => {
-		const result = await fetch(`${envData.apiURL}/users/${sub}`, {
-			method: 'PUT',
-			headers: {
-				'Authorization': `Bearer ${user.token}`,
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(userInfos)
-		})
-		if (result.status !== 200) {
-			console.log("error updating profile : ", await result.json()) // todo handle this
-		} else {
+		try {
+			const result = await put(`/users/${sub}`, user.token, userInfos)
 			setUserModified(userInfos)
 			setUserModified(false)
+		} catch (error) {
+			console.log('update user infos error : ' + error)
 		}
 	}
 
 	const deleteUser = async () => {
-		const result = await fetch(`${envData.apiURL}/users/${sub}`, {
-			method: 'DELETE',
-			headers: {
-				'Authorization': `Bearer ${user.token}`,
-				'Content-Type': 'application/json'
-			}
-		})
-		if (result.status !== 200) {
-			console.log("error deleting profile : ", await result.json()) // todo handle this
-		} else {
-			console.log(result.json())
+		try {
+			await deleteReq(`/users/${sub}`, user.token)
+		} catch (error) {
+			console.log('delete user infos error : ' + error)
 		}
 	}
 
@@ -100,7 +83,7 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 		<div className="display" id="userProfile">
 			<div id="privateInfos">
 				<p className='updateCategories'>Private infos</p>
- 
+
 				<div className="inputsAlign" id="email">
 					<label> Email: </label>
 					<input type="text" id="userMail" value={userInfos.email} onChange={e =>

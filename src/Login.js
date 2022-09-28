@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useEffect } from 'react/cjs/react.development';
 // import Footer from './Footer'
-import { envData } from './App';
+import { get, post } from './utils/Requests';
 
 const Login = ({ setUser }) => {
   const [emailLogin, setEmailLogin] = useState("")
@@ -21,7 +21,6 @@ const Login = ({ setUser }) => {
   const [messageRegister, setMessageRegister] = useState("")
   const [keepConnected, setKeepConnected] = useState(false)
 
-  console.log(envData)
   console.log(registerData)
 
   useEffect(() => {
@@ -36,38 +35,32 @@ const Login = ({ setUser }) => {
   const handleSubmitRegistration = async event => {
     event.preventDefault()
 
-    const result = await fetch(`${envData.apiURL}/users`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(registerData)
-    })
-    const readableResult = await result.json()
-    setMessageRegister(readableResult.message)
+    try {
+      let result = await post(`/users`, undefined, registerData)
+      setMessageRegister("User created successfully")
+    } catch (error) {
+      console.log('registering error : ' + error)
+    }
   }
 
   const handleSubmitLogin = async event => {
     event.preventDefault()
-
-    const result = await fetch(`${envData.apiURL}/auth`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: emailLogin, password: passwordLogin })
-    })
-    const readableResult = await result.json()
-
-    if (result.status === 200) { // login successfull
+    try {
+      let result = await post(`/auth`, undefined, { email: emailLogin, password: passwordLogin })
       setUser(prev => ({
         ...prev,
-        token: readableResult.token,
-        refreshToken: readableResult.refresh_token,
+        token: result.token,
+        refreshToken: result.refresh_token,
         loggedIn: true,
         keepConnected: keepConnected
       }))
       if (keepConnected) {
-        window.localStorage.setItem('refreshToken', readableResult.refresh_token)
+        window.localStorage.setItem('refreshToken', result.refresh_token)
       } else {
-        window.sessionStorage.setItem('refreshToken', readableResult.refresh_token)
+        window.sessionStorage.setItem('refreshToken', result.refresh_token)
       }
+    } catch (error) {
+      console.log('login error : ' + error)
     }
   }
 

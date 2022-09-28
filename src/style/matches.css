@@ -29,6 +29,9 @@
     margin-bottom: 15px;
 }
 
+#messagesList {
+    overflow: auto;
+}
 
 #formPostMessage {
     display: flex;
@@ -150,4 +153,5 @@
 
 #generalInfosTargetDiscussion {
     display: flex;
+
 }

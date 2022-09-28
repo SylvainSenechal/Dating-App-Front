@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { envData } from './App';
+import { get, post } from './utils/Requests';
 
 // Faire un composant view profile, pour moi ou autre personne
 const FindingLove = ({ user, userInfos }) => {
@@ -50,17 +50,11 @@ const FindingLove = ({ user, userInfos }) => {
 
 	useEffect(() => {
 		async function getNewProfile() {
-			console.log("user token", user.token)
-			const result = await fetch(`${envData.apiURL}/users/${sub}/findlover`, {
-				method: 'GET',
-				headers: { 'Authorization': `Bearer ${user.token}` },
-			})
-			console.log('getting new imagee')
-			console.log(result)
-			const readableResult = await result.json()
-			console.log(readableResult)
-
-			if (result.status === 404) {
+			try {
+				setLoveTarget(await get(`/users/${sub}/findlover`, user.token))
+				console.log('getting new imagee') // todo
+			} catch (error) {
+				console.log('find lover error : ' + error)
 				console.log("No potential lover found")
 				setLoveTarget({
 					id: -1,
@@ -70,30 +64,19 @@ const FindingLove = ({ user, userInfos }) => {
 					last_seen: ""
 				})
 			}
-			if (result.status === 200) {
-				console.log("Found a potential lover")
-				setLoveTarget(readableResult)
-			}
 		}
-
 		getNewProfile()
 	}, [findNewLover])
 
 	const swipe = async love => {
-		const result = await fetch(`${envData.apiURL}/users/${sub}/loves/${loveTarget.id}`, {
-			method: 'POST',
-			headers: {
-				'Authorization': `Bearer ${user.token}`,
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ swiper: sub, swiped: loveTarget.id, love: love })
-		})
-		console.log(result)
-		const readableResult = await result.json()
-		console.log(readableResult)
-		if (readableResult.message === "You matched !") {
-			console.log("You both matched !")
-			setMatched(true)
+		try {
+			const result = await post(`/users/${sub}/loves/${loveTarget.id}`, user.token, { swiper: sub, swiped: loveTarget.id, love: love })
+			console.log('getting new imagee') // todo
+			if (result === "You matched !") {
+				setMatched(true)
+			}
+		} catch (error) {
+			console.log('no match error : ' + error)
 		}
 	}
 

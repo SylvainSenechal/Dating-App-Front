@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { envData } from './App';
 import Discussion from './Discussion';
 import UserSettings from './UserSettings';
 import DiscussionsPreview from './DiscussionsPreview';
+import { get, post } from './utils/Requests';
 
 const Matches = ({ user, setUser, userInfos, setUserInfos, socket, messages }) => {
   console.log("LES MESSAGES MATCJJ", messages)
@@ -17,17 +17,11 @@ const Matches = ({ user, setUser, userInfos, setUserInfos, socket, messages }) =
 
   useEffect(() => {
     const getMatchesList = async () => {
-      const result = await fetch(`${envData.apiURL}/lovers/${sub}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-          'Content-Type': 'application/json'
-        }
-      })
-      console.log(result)
-      const readableResult = await result.json()
-      console.log(readableResult)
-      setLovers(readableResult)
+      try {
+        setLovers(await get(`/lovers/${sub}`, user.token))
+      } catch (error) {
+        console.log('get matches error : ' + error)
+      }
     }
     getMatchesList()
   }, [])
@@ -68,11 +62,11 @@ const Matches = ({ user, setUser, userInfos, setUserInfos, socket, messages }) =
               ))
             }
           </div></> :
-        <div id="generalInfosTargetDiscussion"> 
+        <div id="generalInfosTargetDiscussion">
           <button onClick={() => setLoveID(-1)}> go back </button>
           <img id="previewImage" src="https://picsum.photos/50/100" />
           <div > {lovers.find(elem => elem.love_id == loveID).name} </div>
-          
+
         </div>
       }
 

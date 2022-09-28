@@ -5,7 +5,7 @@ import ActivitySwitcher from './ActivitySwitcher';
 import UserSettings from './UserSettings';
 import Insights from './Insights';
 import Matches from './Matches';
-import { envData } from './App';
+import { get, post } from './utils/Requests';
 
 const Dashboard = ({ user, setUser }) => {
   const tokenData64URL = user.token.split('.')[1]
@@ -83,42 +83,20 @@ const Dashboard = ({ user, setUser }) => {
     const getMessagesList = async () => {
       console.log(user.token)
       console.log(sub)
-      // if (loveID >= 0) {
-      // const result = await fetch(`${envData.apiURL}/messages/${loveID}`, {
-      const result = await fetch(`${envData.apiURL}/messages/users/${sub}`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${user.token}`,
-          'Content-Type': 'application/json'
+      try {
+        const result = await get(`/messages/users/${sub}`, user.token)
+        for (let message of result) {
+          if (!messages.has(message.love_id)) {
+            setMessages(new Map(messages.set(message.love_id, [message])))
+          } else {
+            const messagesInLoveRoomID = messages.get(message.love_id)
+            messagesInLoveRoomID.push(message)
+            setMessages(new Map(messages.set(message.love_id, messagesInLoveRoomID)))
+          }
         }
-      })
-      const readableResult = await result.json()
-      console.log(readableResult)
-      // const m = new Map()
-      // for (let message of readableResult) {
-      //   if (!m.has(message.love_id)) {
-      //     m.set(message.love_id, [message])
-      //   } else {
-      //     const messagesInLoveRoomID = m.get(message.love_id)
-      //     messagesInLoveRoomID.push(message)
-      //     m.set(message.love_id, messagesInLoveRoomID)
-      //   }
-      // }
-      for (let message of readableResult) {
-        if (!messages.has(message.love_id)) {
-          setMessages(new Map(messages.set(message.love_id, [message])))
-        } else {
-          const messagesInLoveRoomID = messages.get(message.love_id)
-          messagesInLoveRoomID.push(message)
-          // m.set(message.love_id, messagesInLoveRoomID)
-          setMessages(new Map(messages.set(message.love_id, messagesInLoveRoomID)))
-        }
+      } catch (error) {
+        console.log('get message list error : ' + error)
       }
-      // console.log(m)
-      console.log(readableResult)
-      // setMessages(m)
-
-      // }
     }
 
     getMessagesList()
@@ -145,21 +123,17 @@ const Dashboard = ({ user, setUser }) => {
   })
 
   useEffect(() => {
-		async function getUserInfos() {
-			console.log("GETIING USER INFOS")
-			const result = await fetch(`${envData.apiURL}/users/${sub}`, {
-				method: 'GET',
-				headers: {
-					'Authorization': `Bearer ${user.token}`,
-					'Content-Type': 'application/json'
-				}
-			})
-			const readableResult = await result.json()
-			setUserInfos(readableResult)
-		}
+    async function getUserInfos() {
+      console.log("GETIING USER INFOS")
+      try {
+        setUserInfos(await get(`/users/${sub}`, user.token))
+      } catch (error) {
+        console.log('get user infos error : ' + error)
+      }
+    }
 
-		getUserInfos();
-	}, []);
+    getUserInfos();
+  }, []);
 
 
   // console.log(tokenPayload)

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { envData } from './App';
+import { get, post } from './utils/Requests';
 
 const Insights = ({ user, setUser, userInfos, setUserInfos }) => {
    const tokenData64URL = user.token.split('.')[1]
@@ -20,49 +20,26 @@ const Insights = ({ user, setUser, userInfos, setUserInfos }) => {
          // TODO : D3.js clean graph visualisation of love
          // TODO : Statistics by dates
 
-         const result1 = await fetch(`${envData.apiURL}/users/${sub}/statistics/loved`, {
-            method: 'GET',
-            headers: {
-               'Authorization': `Bearer ${user.token}`,
-               'Content-Type': 'application/json'
-            }
-         })
-         const readableResult1 = await result1.json()
-         console.log(readableResult1)
-         setLoved(readableResult1)
-
-         const result2 = await fetch(`${envData.apiURL}/users/${sub}/statistics/rejected`, {
-            method: 'GET',
-            headers: {
-               'Authorization': `Bearer ${user.token}`,
-               'Content-Type': 'application/json'
-            }
-         })
-         const readableResult2 = await result2.json()
-         console.log(readableResult2)
-         setRejections(readableResult2)
-
-         const result3 = await fetch(`${envData.apiURL}/users/${sub}/statistics/loving`, {
-            method: 'GET',
-            headers: {
-               'Authorization': `Bearer ${user.token}`,
-               'Content-Type': 'application/json'
-            }
-         })
-         const readableResult3 = await result3.json()
-         console.log(readableResult3)
-         setLoving(readableResult3)
-
-         const result4 = await fetch(`${envData.apiURL}/users/${sub}/statistics/rejecting`, {
-            method: 'GET',
-            headers: {
-               'Authorization': `Bearer ${user.token}`,
-               'Content-Type': 'application/json'
-            }
-         })
-         const readableResult4 = await result4.json()
-         console.log(readableResult4)
-         setRejecting(readableResult4)
+         try {
+            setLoved(await get(`/users/${sub}/statistics/loved`, user.token))
+         } catch (error) {
+            console.log('loved stats error : ' + error)
+         }
+         try {
+            setRejections(await get(`/users/${sub}/statistics/rejected`, user.token))
+         } catch (error) {
+            console.log('rejection stats error : ' + error)
+         }
+         try {
+            setLoving(await get(`/users/${sub}/statistics/loving`, user.token))
+         } catch (error) {
+            console.log('loving stats error : ' + error)
+         }
+         try {
+            setRejecting(await get(`/users/${sub}/statistics/rejecting`, user.token))
+         } catch (error) {
+            console.log('rejection stats error : ' + error)
+         }
       }
 
       getUserStatistics();

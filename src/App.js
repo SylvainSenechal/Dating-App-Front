@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Login from './Login';
 import Dashboard from './Dashboard';
+import { get, post } from './utils/Requests';
 
 
 // TODO : utiliser session storage au lieu de user
@@ -33,21 +34,18 @@ const App = props => {
         console.log(Date.now() / 1000 + 5)
         if (Date.now() / 1000 + 5 < exp) { // 5 secs of margin 
           console.log("relogging")
-          const result = await fetch(`${envData.apiURL}/auth/refresh`, { // todo check error on this
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ refresh_token: refreshToken })
-          })
-          const readableResult = await result.json()
-          setUser(prev => ({
-            ...prev,
-            loggedIn: true,
-            keepConnected: true, // attention à ce keepconnected
-            token: readableResult.token,
-            refreshToken: refreshToken
-          }))
+          try {
+            const result = await post(`/auth/refresh`, undefined, { refresh_token: refreshToken })
+            setUser(prev => ({
+              ...prev,
+              loggedIn: true,
+              keepConnected: true, // attention à ce keepconnected
+              token: result.token,
+              refreshToken: refreshToken
+            }))
+          } catch (error) {
+            console.log('refresh token error : ' + error)
+          }
         }
         else {
           console.log('refreshToken found but expired')
@@ -63,22 +61,18 @@ const App = props => {
 
   useEffect(() => { // This will check for refreshing the current token if outdated, 
     const fetchData = async () => {
-      const result = await fetch(`${envData.apiURL}/auth/refresh`, { // todo check error on this
-        method: 'POST', // *GET, POST, PUT, DELETE, etc.
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ refresh_token: user.refreshToken })
-      })
-      const readableResult = await result.json()
-      // console.log(readableResult)
-      setUser(prev => ({
-        ...prev,
-        loggedIn: true,
-        keepConnected: true, // attention à ce keepconnected
-        token: readableResult.token,
-        refreshToken: user.refreshToken   //todo : refresh le refresh token ?
-      }))
+      try {
+        const result = await post(`/auth/refresh`, undefined, { refresh_token: user.refreshToken })
+        setUser(prev => ({
+          ...prev,
+          loggedIn: true,
+          keepConnected: true, // attention à ce keepconnected
+          token: result.token,
+          refreshToken: user.refreshToken
+        }))
+      } catch (error) {
+        console.log('refresh token error : ' + error)
+      }
     }
 
     const timer = setInterval(() => {
