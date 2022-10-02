@@ -102,6 +102,15 @@ const Login = ({ setUser }) => {
     )
   }
 
+  const setGender = (e, genderData) => {
+    e.preventDefault()
+    setRegisterData(prev => ({ ...prev, gender: genderData }))
+  }
+  const setLookingFor = (e, genderData) => {
+    e.preventDefault()
+    setRegisterData(prev => ({ ...prev, looking_for: genderData }))
+  }
+
   if (stepRegister === "email") {
     return (
       <div className="LoginPage">
@@ -157,14 +166,15 @@ const Login = ({ setUser }) => {
               <input type="number" name="age" id="ageRegister" value={registerData.age} onChange={e => setRegisterData(prev => ({ ...prev, age: Number(e.target.value) }))} required />
               <label htmlFor="gender"> Enter your gender: </label>
               <div id="gender pick">
-                <button onClick={() => setRegisterData(prev => ({ ...prev, gender: "male" }))}> male </button>
-                <button onClick={() => setRegisterData(prev => ({ ...prev, gender: "female" }))}> female </button>
+                {/* <button onClick={() => setRegisterData(prev => ({ ...prev, gender: "male" }))}> male </button> */}
+                <button onClick={e => setGender(e, "male")}> male </button>
+                <button onClick={e => setGender(e, "female")}> female </button>
               </div>
               {/* <input type="text" name="gender" id="genderRegister" value={registerData.gender} onChange={e => setRegisterData(prev => ({ ...prev, gender: e.target.value }))} required /> */}
               <label htmlFor="lookingFor"> Enter who you are looking for: </label>
               <div id="looking_for pick">
-                <button onClick={() => setRegisterData(prev => ({ ...prev, looking_for: "male" }))}> male </button>
-                <button onClick={() => setRegisterData(prev => ({ ...prev, looking_for: "female" }))}> female </button>
+                <button onClick={e => setLookingFor(e, "male")}> male </button>
+                <button onClick={e => setLookingFor(e, "female")}> female </button>
               </div>
               {/* <input type="text" name="lookingFor" id="lookingForRegister" value={registerData.lookingFor} onChange={e => setRegisterData(prev => ({ ...prev, looking_for: e.target.value }))} required /> */}
               <input type="submit" value="Register" />

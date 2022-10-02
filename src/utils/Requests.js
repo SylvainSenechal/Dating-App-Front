@@ -7,7 +7,8 @@ const get = async (url, jwtToken) => {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${jwtToken}`
+      'Authorization': `Bearer ${jwtToken}`,
+      'Trace': generateTraceID()
     },
   })
   const readableResult = await getResult.json()
@@ -27,7 +28,8 @@ const post = async (url, jwtToken, data) => {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${jwtToken}`
+      'Authorization': `Bearer ${jwtToken}`,
+      'Trace': generateTraceID()
     },
     body: JSON.stringify(data)
   })
@@ -47,7 +49,8 @@ const put = async (url, jwtToken, data) => {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${jwtToken}`
+      'Authorization': `Bearer ${jwtToken}`,
+      'Trace': generateTraceID()
     },
     body: JSON.stringify(data)
   })
@@ -59,7 +62,7 @@ const put = async (url, jwtToken, data) => {
   if (postResult.status === STATUS_OK) {
     return readableResult.data
   }
-  throw `Post request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
+  throw `Put request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
 }
 
 const deleteReq = async (url, jwtToken, data) => {
@@ -67,7 +70,8 @@ const deleteReq = async (url, jwtToken, data) => {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${jwtToken}`
+      'Authorization': `Bearer ${jwtToken}`,
+      'Trace': generateTraceID()
     },
     body: JSON.stringify(data)
   })
@@ -79,7 +83,9 @@ const deleteReq = async (url, jwtToken, data) => {
   if (postResult.status === STATUS_OK) {
     return readableResult.data
   }
-  throw `Post request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
+  throw `Delete request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
 }
+
+const generateTraceID = () => Math.floor(Math.random() * Math.pow(2, 63)) + 1
 
 export { get, post, put, deleteReq };
