@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-const DiscussionsPreview = ({ user, messages, socket, setLoveID }) => {
+const DiscussionsPreview = ({ user, messages, setLoveID }) => {
   const tokenData64URL = user.token.split('.')[1]
   const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
   const tokenPayload = JSON.parse(atob(tokenB64))
@@ -13,7 +13,7 @@ const DiscussionsPreview = ({ user, messages, socket, setLoveID }) => {
     console.log(e)
     console.log(loveID)
     setLoveID(loveID)
-    socket.send(`/join ${loveID}`) // joining a love room 
+    // socket.send(`/join ${loveID}`) // joining a love room 
   }
 
   const discussionPreview = () => {
@@ -31,7 +31,7 @@ const DiscussionsPreview = ({ user, messages, socket, setLoveID }) => {
       else return -1
     })
     for (let elem of content) {
-      console.log(elem.lastMessageDate)
+      // console.log(elem.lastMessageDate)
       const dateDisplay = days[elem.lastMessageDate.getDay()] + " " + elem.lastMessageDate.getHours() + ":" + elem.lastMessageDate.getMinutes() + ":" + elem.lastMessageDate.getSeconds()
       contentSorted.push(
         <button data-index={elem.loveID} onClick={chatWith} key={elem.loveID} className='discussionBlocPreview'>
@@ -55,7 +55,7 @@ const DiscussionsPreview = ({ user, messages, socket, setLoveID }) => {
   )
 }
 
-const days = {
+const days = { // todo : move to utils/const folder
   0: "Sun",
   1: "Mon",
   2: "Tue",

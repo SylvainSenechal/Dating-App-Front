@@ -1,17 +1,29 @@
 import { useState, useEffect, useCallback } from 'react';
 import { get, post } from './utils/Requests';
 
-const Discussion = ({ user, loveID, setLoveID, messages }) => {
+const Discussion = ({ user, loveID, setLoveID, newChatMessage }) => {
   const tokenData64URL = user.token.split('.')[1]
   const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
   const tokenPayload = JSON.parse(atob(tokenB64))
   const { name, sub, iat, exp } = tokenPayload
 
-  console.log(sub)
-  console.log(loveID)
-  console.log(messages)
+  // console.log(sub)
+  // console.log(loveID)
   const [newMessage, setNewMessage] = useState("")
+  const [messages, setMessages] = useState([])
 
+  useEffect(() => {
+    const getMessagesList = async () => {
+      try {
+        setMessages(await get(`/messages/${loveID}`, user.token))
+      } catch (error) {
+        console.log('get discussion message list error : ' + error)
+      }
+    }
+
+    getMessagesList()
+  }, [newChatMessage])
+  
   const postMessage = async e => {
     e.preventDefault() //: TODO : see if useful ?
     try {

@@ -19,7 +19,7 @@ const App = props => {
     refreshToken: "",
     activity: "finding love"
   })
-  console.log(user)
+  // console.log(user)
 
   useEffect(() => { // This is only to restore the "keep me connected" session
     const restoreSession = async () => {

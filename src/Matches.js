@@ -4,11 +4,10 @@ import UserSettings from './UserSettings';
 import DiscussionsPreview from './DiscussionsPreview';
 import { get, post } from './utils/Requests';
 
-const Matches = ({ user, setUser, userInfos, setUserInfos, socket, messages }) => {
-  console.log("LES MESSAGES MATCJJ", messages)
+const Matches = ({ user, setUser, userInfos, setUserInfos, newChatMessage }) => {
   const [lovers, setLovers] = useState([])
   const [loveID, setLoveID] = useState(-1)
-  const [discussionMessages, setDiscussionMessages] = useState([])
+  const [messages, setMessages] = useState(new Map())
 
   const tokenData64URL = user.token.split('.')[1]
   const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
@@ -27,23 +26,30 @@ const Matches = ({ user, setUser, userInfos, setUserInfos, socket, messages }) =
   }, [])
 
   useEffect(() => {
-    if (loveID >= 0) {
-      if (messages.has(loveID)) {
-        const messagesDiscussion = messages.get(loveID) // todo : handle empty messages (new match)
-        console.log(messagesDiscussion)
-        setDiscussionMessages(messagesDiscussion)
-      } else {
-        console.log("no messages yet in the discussion")
-        setDiscussionMessages([])
+    console.log("RETRYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
+    const getMessagesList = async () => {
+      try {
+        const result = await get(`/messages/users/${sub}`, user.token)
+        for (let message of result) {
+          if (!messages.has(message.love_id)) {
+            setMessages(new Map(messages.set(message.love_id, [message])))
+          } else {
+            const messagesInLoveRoomID = messages.get(message.love_id)
+            messagesInLoveRoomID.push(message)
+            setMessages(new Map(messages.set(message.love_id, messagesInLoveRoomID)))
+          }
+        }
+      } catch (error) {
+        console.log('get message list error : ' + error)
       }
-
     }
-  }, [loveID])
+
+    getMessagesList()
+  }, [newChatMessage])
 
   const chatWith = e => {
     const loveID = Number(e.currentTarget.dataset.index)
     setLoveID(loveID)
-    socket.send(`/join ${loveID}`) // joining a love room 
   }
 
   // TODO : pinned lover feature
@@ -71,8 +77,8 @@ const Matches = ({ user, setUser, userInfos, setUserInfos, socket, messages }) =
       }
 
       {loveID === -1 ?
-        <DiscussionsPreview user={user} messages={messages} socket={socket} setLoveID={setLoveID} /> :
-        <Discussion user={user} loveID={loveID} setLoveID={setLoveID} messages={discussionMessages} />
+        <DiscussionsPreview user={user} messages={messages} setLoveID={setLoveID} /> :
+        <Discussion user={user} loveID={loveID} setLoveID={setLoveID} newChatMessage={newChatMessage}/>
       }
 
     </div>

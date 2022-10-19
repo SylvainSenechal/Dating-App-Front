@@ -19,6 +19,7 @@ const Insights = ({ user, setUser, userInfos, setUserInfos }) => {
          // TODO : clean parallel calls..
          // TODO : D3.js clean graph visualisation of love
          // TODO : Statistics by dates
+         // TODO : NB messages sent, NB messages seen,
 
          try {
             setLoved(await get(`/users/${sub}/statistics/loved`, user.token))

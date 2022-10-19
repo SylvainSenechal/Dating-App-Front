@@ -1,0 +1,27 @@
+#eventsDisplay {
+    position: absolute;
+    background-color: red;
+    top: 10px;
+    left: calc(50% - 150px);
+    width: 300px;
+    height: 50px;
+    opacity: 0;
+}
+
+.displayer {
+    animation: newNotification 1s ease forwards;
+}
+
+.removedDisplayer {
+    animation: notificationOver 1s ease forwards;
+}
+
+@keyframes newNotification {
+    from {opacity: 0;}
+    to {opacity: 1;}
+}
+
+@keyframes notificationOver {
+    from {opacity: 1;}
+    to {opacity: 0;}
+}

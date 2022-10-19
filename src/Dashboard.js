@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import ImageUploader from './ImageUploader';
 import FindingLove from './FindingLove';
 import ActivitySwitcher from './ActivitySwitcher';
 import UserSettings from './UserSettings';
 import Insights from './Insights';
 import Matches from './Matches';
+import EventsDisplay from './EventsDisplay';
 import { get, post } from './utils/Requests';
 
 const Dashboard = ({ user, setUser }) => {
@@ -12,96 +13,41 @@ const Dashboard = ({ user, setUser }) => {
   const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
   const tokenPayload = JSON.parse(atob(tokenB64))
   const { name, sub, iat, exp } = tokenPayload
-  const [loveID, setLoveID] = useState(-1)
-  const [messages, setMessages] = useState(new Map())
   const [socket, setSocket] = useState()
+  const [newChatMessage, _setNewChatMessage] = useState(0)
+  const newChatMessageRef  = useRef(newChatMessage)
+  
+  const setNewChatMessage = val => {
+    newChatMessageRef.current = val
+    _setNewChatMessage(val)
+  }
+  
   useEffect(() => {
-    setSocket(new WebSocket('ws://localhost:8080/ws/'))
-  }, [])
-
-  useEffect(() => {
-    if (socket !== undefined) {
-      socket.addEventListener('message', function (event) {
-        console.log('Message from server ', event.data);
-        try {
-          console.log("RECEIVED WS MESSAGE")
-          const message = JSON.parse(event.data)
-          console.log("message received : ", message)
-          console.log(message.love_id)
-          console.log(message.message_type)
-          console.log(typeof message.love_id)
-          console.log(messages)
-          console.log(messages.has(3))
-          console.log(messages.has(2))
-          console.log(messages.has(1))
-          if (message.message_type === "chat") {
-            console.log("CHAT TYPE MESSAGE")
-            if (!messages.has(message.love_id)) {
-              console.log("NON EXISTENT")
-              // messages.set(message.love_id, [{ id: message.message_id, message: message.message, poster_id: message.poster_id, love_id: message.love_id }])
-              setMessages(new Map(messages.set(message.love_id, [{ id: message.message_id, message: message.message, poster_id: message.poster_id, love_id: message.love_id }])))
-              console.log(messages)
-
-
-            } else {
-              console.log("EXISTENT")
-
-              const currentMessages = messages
-              const messagesInLoveRoomID = currentMessages.get(message.love_id)
-              messagesInLoveRoomID.push({ id: message.message_id, message: message.message, poster_id: message.poster_id, love_id: message.love_id, creation_datetime: message.creation_datetime })
-              // currentMessages.set(message.love_id, messagesInLoveRoomID)
-              console.log(messages)
-              // setMessages(currentMessages)
-              setMessages(new Map(messages.set(message.love_id, messagesInLoveRoomID)))
-              console.log("GEEEEEEE")
-              console.log(messages)
-            }
-          }
-          // if (message.startsWith("/chat ")) {
-          //   console.log("start with " + message)
-          //   const chatMessage = message.slice(6) // removes "/chat "
-          //   console.log(chatMessage)
-          //   let [messageId, ...rest] = chatMessage.split(" ") // split on the first space, ie : the id_message and the rest of the message
-          //   const messageContent = rest.join(" ") // rebuild message content
-          //   console.log(messageId)
-          //   console.log(messageContent)
-          //   // if (messages.has())
-          // }
-        } catch (error) {
-          console.log(error)
-        }
-
-      });
-      socket.onopen = () => {
-        socket.send(`/authenticate ${user.token}`)
-      }
+    const s = new WebSocket('ws://localhost:8080/ws/')
+    setSocket(s)
+    s.onopen = () => {
+      s.send(`/authenticate ${user.token}`)
     }
-  }, [socket])
-
-
-  useEffect(() => {
-    const getMessagesList = async () => {
-      console.log(user.token)
-      console.log(sub)
-      try {
-        const result = await get(`/messages/users/${sub}`, user.token)
-        for (let message of result) {
-          if (!messages.has(message.love_id)) {
-            setMessages(new Map(messages.set(message.love_id, [message])))
-          } else {
-            const messagesInLoveRoomID = messages.get(message.love_id)
-            messagesInLoveRoomID.push(message)
-            setMessages(new Map(messages.set(message.love_id, messagesInLoveRoomID)))
-          }
-        }
-      } catch (error) {
-        console.log('get message list error : ' + error)
-      }
-    }
-
-    getMessagesList()
+    s.addEventListener('message', handleSocketMessage)
   }, [])
+  
+  const handleSocketMessage = event => {
+    const socketMessage = JSON.parse(event.data)
+    console.log("received a chat message ", socketMessage)
+    if (socketMessage.message_type === "chat") {
+      const displayer = document.getElementById("eventsDisplay")
+      displayer.classList.add('displayer')
+      setTimeout(() => {
+        displayer.classList.add('removedDisplayer')
+        setTimeout(() => { // reset classes to none after animation is over, TODO clean this 
+          displayer.classList.remove('displayer')
+          displayer.classList.remove('removedDisplayer')
+        }, 1000);
+      }, 3000);
 
+      setNewChatMessage(newChatMessageRef.current + 1)
+    }
+  }
 
   const [date, setDate] = useState(Math.floor(Date.now() / 1000))
   const [refresh, setRefresh] = useState(0)
@@ -158,6 +104,7 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
+          <EventsDisplay user={user} />
           <FindingLove user={user} userInfos={userInfos} />
           {/* </div> */}
           <ActivitySwitcher user={user} setUser={setUser} />
@@ -167,6 +114,7 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
+          <EventsDisplay user={user} />
           <UserSettings user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
           {/* </div> */}
           <ActivitySwitcher user={user} setUser={setUser} />
@@ -176,6 +124,7 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
+          <EventsDisplay user={user} />
           <Insights user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
           {/* </div> */}
           <ActivitySwitcher user={user} setUser={setUser} />
@@ -186,7 +135,8 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
-          <Matches user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} socket={socket} messages={messages} />
+          <EventsDisplay user={user} />
+          <Matches user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} newChatMessage={newChatMessage} />
           {/* </div> */}
           <ActivitySwitcher user={user} setUser={setUser} />
         </div>

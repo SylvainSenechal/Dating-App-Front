@@ -4,6 +4,7 @@ import './style/login.css';
 import './style/dashboard.css';
 import './style/matches.css';
 import './style/findLove.css';
+import './style/eventsDisplay.css';
 import App from './App';
 
 ReactDOM.render(
