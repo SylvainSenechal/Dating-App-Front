@@ -11,6 +11,7 @@ const Insights = ({ user, setUser, userInfos, setUserInfos }) => {
    const [rejections, setRejections] = useState(0)
    const [loving, setLoving] = useState(0)
    const [rejecting, setRejecting] = useState(0)
+   const [traces, setTraces] = useState()
    console.log("OUOUI")
 
 
@@ -41,10 +42,18 @@ const Insights = ({ user, setUser, userInfos, setUserInfos }) => {
          } catch (error) {
             console.log('rejection stats error : ' + error)
          }
+         try {
+            setTraces(await get(`/statistics/traces`, user.token))
+         } catch (error) {
+            console.log('traces stats error : ' + error)
+         }
+         console.log(traces)
+
       }
 
       getUserStatistics();
    }, []);
+   document.onclick = e => console.log(traces)
    return (
       <div className="display">
          insights :

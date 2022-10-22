@@ -47,6 +47,9 @@ const Dashboard = ({ user, setUser }) => {
 
       setNewChatMessage(newChatMessageRef.current + 1)
     }
+    if (socketMessage.message_type === "green_tick") { // TODO : opti green tick, don't reload all the messages..
+      setNewChatMessage(newChatMessageRef.current + 1)
+    }
   }
 
   const [date, setDate] = useState(Math.floor(Date.now() / 1000))

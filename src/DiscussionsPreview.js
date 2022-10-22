@@ -15,14 +15,28 @@ const DiscussionsPreview = ({ user, messages, setLoveID }) => {
     setLoveID(loveID)
     // socket.send(`/join ${loveID}`) // joining a love room 
   }
-
+  console.log("rerender")
   const discussionPreview = () => {
     let content = []
     let contentSorted = []
+    // console.log("messages", messages)
     for (const [loveID, messageArray] of messages.entries()) {
+      let nbMessagesUnseen = 0
+      // console.log(messageArray)
+      // console.log(loveID)
+      // console.log(messageArray)
+
+      for (let message of messageArray) {
+        if (message.poster_id !== sub && !message.seen) { // Message not posted by me, and that I havent seen
+          // console.log("UNSEEEEN ", nbMessagesUnseen)
+          // console.log("UNSEEEEN 1", message.id)
+          nbMessagesUnseen++
+        }
+      }
       content.push({
         loveID: loveID,
         lastMessage: messageArray[messageArray.length - 1].message,
+        nbMessagesUnseen: nbMessagesUnseen,
         lastMessageDate: new Date(messageArray[messageArray.length - 1].creation_datetime)
       })
     }
@@ -30,14 +44,15 @@ const DiscussionsPreview = ({ user, messages, setLoveID }) => {
       if (a.lastMessageDate < b.lastMessageDate) return 1
       else return -1
     })
+
     for (let elem of content) {
-      // console.log(elem.lastMessageDate)
       const dateDisplay = days[elem.lastMessageDate.getDay()] + " " + elem.lastMessageDate.getHours() + ":" + elem.lastMessageDate.getMinutes() + ":" + elem.lastMessageDate.getSeconds()
       contentSorted.push(
         <button data-index={elem.loveID} onClick={chatWith} key={elem.loveID} className='discussionBlocPreview'>
-          <div className='previewName'> Love {elem.loveID} </div>
-          <div> {dateDisplay} </div>
-          <div> {elem.lastMessage} </div>
+          <div className='previewName'> Love {elem.loveID} </div> {/* todo : name of the lover */}
+          <div className='previewDate'> {dateDisplay} </div>
+          <div className='PreviewUnSeenMessages'> {elem.nbMessagesUnseen} </div>
+          <div className='previewMessage'> {elem.lastMessage} </div>
         </button>
       )
     }

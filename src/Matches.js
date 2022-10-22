@@ -26,24 +26,25 @@ const Matches = ({ user, setUser, userInfos, setUserInfos, newChatMessage }) => 
   }, [])
 
   useEffect(() => {
-    console.log("RETRYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY")
     const getMessagesList = async () => {
       try {
         const result = await get(`/messages/users/${sub}`, user.token)
-        for (let message of result) {
-          if (!messages.has(message.love_id)) {
-            setMessages(new Map(messages.set(message.love_id, [message])))
+        const newMessages = new Map()
+        for (let newMessage of result) {
+          if (!newMessages.has(newMessage.love_id)) {
+            newMessages.set(newMessage.love_id, [newMessage])
           } else {
-            const messagesInLoveRoomID = messages.get(message.love_id)
-            messagesInLoveRoomID.push(message)
-            setMessages(new Map(messages.set(message.love_id, messagesInLoveRoomID)))
+            const messagesInLoveRoomID = newMessages.get(newMessage.love_id)
+            messagesInLoveRoomID.push(newMessage)
+            newMessages.set(newMessage.love_id, messagesInLoveRoomID)
           }
         }
+        setMessages(newMessages)
       } catch (error) {
         console.log('get message list error : ' + error)
       }
     }
-
+    
     getMessagesList()
   }, [newChatMessage])
 
@@ -51,6 +52,9 @@ const Matches = ({ user, setUser, userInfos, setUserInfos, newChatMessage }) => 
     const loveID = Number(e.currentTarget.dataset.index)
     setLoveID(loveID)
   }
+
+
+  document.onclick = e => console.log(messages)
 
   // TODO : pinned lover feature
   return (

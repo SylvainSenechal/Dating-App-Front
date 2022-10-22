@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { get, post } from './utils/Requests';
+import { get, post, put } from './utils/Requests';
 
 const Discussion = ({ user, loveID, setLoveID, newChatMessage }) => {
   const tokenData64URL = user.token.split('.')[1]
@@ -16,6 +16,10 @@ const Discussion = ({ user, loveID, setLoveID, newChatMessage }) => {
     const getMessagesList = async () => {
       try {
         setMessages(await get(`/messages/${loveID}`, user.token))
+        const messageDiv = document.getElementById("messagesList")
+        const messagesDivViewHeight = messageDiv.clientHeight // The height that we can view 
+        const messagesDivHeight = messageDiv.scrollHeight // The height if we could view the whole div with a big monitor
+        messageDiv.scroll(0, messagesDivHeight - messagesDivViewHeight)
       } catch (error) {
         console.log('get discussion message list error : ' + error)
       }
@@ -23,7 +27,9 @@ const Discussion = ({ user, loveID, setLoveID, newChatMessage }) => {
 
     getMessagesList()
   }, [newChatMessage])
-  
+
+  document.onclick = e => console.log(messages)
+
   const postMessage = async e => {
     e.preventDefault() //: TODO : see if useful ?
     try {
@@ -34,8 +40,51 @@ const Discussion = ({ user, loveID, setLoveID, newChatMessage }) => {
     }
   }
 
-  // TODO : empty chat when message posted
-  // todo : Message seen feature
+  useEffect(() => {
+    const greenTickCurrentMessages = async () => {
+      console.log("TICKING")
+      let messagesToTick = []
+      for (let message of messages) {
+        console.log(message)
+        if (message.poster_id !== sub) { // Only green tick messages of the other person
+          if (!message.seen) { // Only green tick messages that are not already ticked
+            messagesToTick.push({"message_id": message.id, "love_id": message.love_id})
+          }
+        }
+      }
+      console.log("TICKING 1 ", messagesToTick)
+      console.log("TICKING 2 ", JSON.stringify(messagesToTick))
+
+      try {
+        await put(`/messages/tick_messages`, user.token, { messages: messagesToTick })
+      } catch (error) {
+        console.log('green tick messages error : ' + error)
+      }
+    }
+
+    greenTickCurrentMessages()
+  }, [messages])
+
+  const greenTickSeen = seen => {
+    if (seen) {
+      return (
+        // <span className='tickUnseen'>  </span>
+        <svg className='tickSeen'>
+          <circle cx="0" cy="0" r="5" fill="green" />
+        </svg>
+      )
+    } else {
+      return (
+        // <span className='tickUnseen'>  </span>
+        <svg className='tickUnseen'>
+          <circle cx="0" cy="0" r="5" fill="red" />
+        </svg>
+      )
+    }
+
+  }
+
+  // Text tres long en train decrire: augmenter la taille de la box pour ecrire
   // TODO : pinned/keep a lover at the top feature
   // TODO : Message DATE : Onky print if delta between previous message is bigger than some defined time
   return (
@@ -48,7 +97,10 @@ const Discussion = ({ user, loveID, setLoveID, newChatMessage }) => {
             const displayedDate = days[date.getDay()] + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
             return (message.poster_id === sub ?
               <div key={message.id} className="ownMessagePosition">
-                <div className="message ownMessage"> {message.message}</div>
+                {greenTickSeen(message.seen)}
+                <div className="message ownMessage">
+                  <div> {message.message} </div>
+                </div>
                 <div className="datetimeMessage"> {displayedDate} </div>
               </div>
               :

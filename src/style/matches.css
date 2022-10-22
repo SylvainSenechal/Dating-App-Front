@@ -128,8 +128,8 @@
 
 .discussionBlocPreview {
     all: unset;
+    position: relative;
     cursor: pointer;
-
     display: flex;
     flex-direction: column;
     margin-bottom: 10px;
@@ -149,9 +149,52 @@
     font-weight: bold;
 }
 
+.tickSeen {
+    position: relative;
+    width: 5px;
+    height: 5px;
+    top: 3px;
+    left: 8px;
+    float: left;
+}
+
+.tickUnseen {
+    position: relative;
+    width: 5px;
+    height: 5px;
+    top: 3px;
+    left: 8px;
+    float: left;
+}
+
+.previewMessage {
+    display: flex;
+}
+
+.PreviewUnSeenMessages {
+
+
+
+      /* circle shape, size and position */
+  position: absolute;
+  right: -0.7em;
+  top: -0.7em;
+  min-width: 1.6em; /* or width, explained below. */
+  height: 1.6em;
+  border-radius: 0.8em; /* or 50%, explained below. */
+  border: 0.05em solid white;
+  background-color: red;
+
+  /* number size and position */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.8em;
+  color: white;
+}
+
 /* General info on selected user for discussion */
 
 #generalInfosTargetDiscussion {
     display: flex;
-
 }

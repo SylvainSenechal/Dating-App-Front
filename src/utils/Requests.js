@@ -56,9 +56,9 @@ const put = async (url, jwtToken, data) => {
   })
   const readableResult = await postResult.json()
 
-  console.log('post response code : ' + readableResult.code)
-  console.log('post response message : ' + readableResult.message)
-  console.log('post response data : ' + readableResult.data)
+  console.log('put response code : ' + readableResult.code)
+  console.log('put response message : ' + readableResult.message)
+  console.log('put response data : ' + readableResult.data)
   if (postResult.status === STATUS_OK) {
     return readableResult.data
   }
@@ -77,9 +77,9 @@ const deleteReq = async (url, jwtToken, data) => {
   })
   const readableResult = await postResult.json()
 
-  console.log('post response code : ' + readableResult.code)
-  console.log('post response message : ' + readableResult.message)
-  console.log('post response data : ' + readableResult.data)
+  console.log('delete response code : ' + readableResult.code)
+  console.log('delete response message : ' + readableResult.message)
+  console.log('delete response data : ' + readableResult.data)
   if (postResult.status === STATUS_OK) {
     return readableResult.data
   }
