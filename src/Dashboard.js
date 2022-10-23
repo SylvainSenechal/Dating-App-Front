@@ -7,6 +7,7 @@ import Insights from './Insights';
 import Matches from './Matches';
 import EventsDisplay from './EventsDisplay';
 import { get, post } from './utils/Requests';
+import { Socket } from 'socket.io-client';
 
 const Dashboard = ({ user, setUser }) => {
   const tokenData64URL = user.token.split('.')[1]
@@ -14,14 +15,15 @@ const Dashboard = ({ user, setUser }) => {
   const tokenPayload = JSON.parse(atob(tokenB64))
   const { name, sub, iat, exp } = tokenPayload
   const [socket, setSocket] = useState()
+  const [notificationDisplay, setNotificationDisplay] = useState("")
   const [newChatMessage, _setNewChatMessage] = useState(0)
-  const newChatMessageRef  = useRef(newChatMessage)
-  
+  const newChatMessageRef = useRef(newChatMessage)
+
   const setNewChatMessage = val => {
     newChatMessageRef.current = val
     _setNewChatMessage(val)
   }
-  
+
   useEffect(() => {
     const s = new WebSocket('ws://localhost:8080/ws/')
     setSocket(s)
@@ -30,11 +32,12 @@ const Dashboard = ({ user, setUser }) => {
     }
     s.addEventListener('message', handleSocketMessage)
   }, [])
-  
+
   const handleSocketMessage = event => {
     const socketMessage = JSON.parse(event.data)
     console.log("received a chat message ", socketMessage)
     if (socketMessage.message_type === "chat") {
+      setNotificationDisplay(`New message : ${socketMessage.message}`)
       const displayer = document.getElementById("eventsDisplay")
       displayer.classList.add('displayer')
       setTimeout(() => {
@@ -107,8 +110,8 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
-          <EventsDisplay user={user} />
-          <FindingLove user={user} userInfos={userInfos} />
+          <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
+          <FindingLove user={user} userInfos={userInfos} setNotificationDisplay={setNotificationDisplay} />
           {/* </div> */}
           <ActivitySwitcher user={user} setUser={setUser} />
         </div>
@@ -117,7 +120,7 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
-          <EventsDisplay user={user} />
+          <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
           <UserSettings user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
           {/* </div> */}
           <ActivitySwitcher user={user} setUser={setUser} />
@@ -127,7 +130,7 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
-          <EventsDisplay user={user} />
+          <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
           <Insights user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
           {/* </div> */}
           <ActivitySwitcher user={user} setUser={setUser} />
@@ -138,7 +141,7 @@ const Dashboard = ({ user, setUser }) => {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
-          <EventsDisplay user={user} />
+          <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
           <Matches user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} newChatMessage={newChatMessage} />
           {/* </div> */}
           <ActivitySwitcher user={user} setUser={setUser} />

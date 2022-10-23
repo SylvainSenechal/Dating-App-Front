@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { get, post } from './utils/Requests';
 
 // Faire un composant view profile, pour moi ou autre personne
-const FindingLove = ({ user, userInfos }) => {
+const FindingLove = ({ user, userInfos, setNotificationDisplay }) => {
 	const tokenData64URL = user.token.split('.')[1]
 	const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
 	const tokenPayload = JSON.parse(atob(tokenB64))
@@ -43,9 +43,6 @@ const FindingLove = ({ user, userInfos }) => {
 		"https://picsum.photos/500/1200"
 	])
 	const [nbImages, setNbImages] = useState(imagesTarget.length)
-
-
-	const [matched, setMatched] = useState(false)
 	const [findNewLover, setFindNewLover] = useState(0)
 
 	useEffect(() => {
@@ -73,7 +70,16 @@ const FindingLove = ({ user, userInfos }) => {
 			const result = await post(`/users/${sub}/loves/${loveTarget.id}`, user.token, { swiper: sub, swiped: loveTarget.id, love: love })
 			console.log('getting new imagee') // todo
 			if (result === "You matched !") {
-				setMatched(true)
+				setNotificationDisplay("It's a Match !")
+				const displayer = document.getElementById("eventsDisplay")
+				displayer.classList.add('displayer')
+				setTimeout(() => {
+					displayer.classList.add('removedDisplayer')
+					setTimeout(() => { // reset classes to none after animation is over, TODO clean this 
+						displayer.classList.remove('displayer')
+						displayer.classList.remove('removedDisplayer')
+					}, 1000);
+				}, 3000);
 			}
 		} catch (error) {
 			console.log('no match error : ' + error)
@@ -104,16 +110,6 @@ const FindingLove = ({ user, userInfos }) => {
 			setImageIdShown(prev => Math.min(prev + 1, nbImages - 1))
 		}
 		console.log(ImageIdShown)
-	}
-
-	const MatchedComponent = () => {
-		if (matched) {
-			return (
-				<div >
-					Congralutation, you just matched somebody, click here(TODO) to see your matches
-				</div>
-			)
-		}
 	}
 
 	// Thanks to : https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
@@ -175,8 +171,6 @@ const FindingLove = ({ user, userInfos }) => {
 						</div>
 					</div>
 				</div>
-
-				{MatchedComponent()}
 
 			</div>
 		)
