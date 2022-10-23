@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const ActivitySwitcher = ({ user, setUser }) => {
+const ActivitySwitcher = ({ user, setUser, nbUnseenMatches }) => {
 	const showProfile = e => {
 		e.preventDefault()
 		setUser(prev => ({ ...prev, activity: "user profile" }))
@@ -31,6 +31,7 @@ const ActivitySwitcher = ({ user, setUser }) => {
 			</div>
 			<div id="matches">
 				<button onClick={showMatches}> matches </button>
+				<div id='NbUnseenMatches'> {nbUnseenMatches} </div>
 			</div>
 			<div id="insights">
 				<button onClick={showInsights}> insights </button>

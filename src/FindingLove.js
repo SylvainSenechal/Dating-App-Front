@@ -2,30 +2,11 @@ import { useState, useEffect } from 'react';
 import { get, post } from './utils/Requests';
 
 // Faire un composant view profile, pour moi ou autre personne
-const FindingLove = ({ user, userInfos, setNotificationDisplay }) => {
+const FindingLove = ({ user, userInfos, setNotificationDisplay, newMatch, setNewMatch }) => {
 	const tokenData64URL = user.token.split('.')[1]
 	const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
 	const tokenPayload = JSON.parse(atob(tokenB64))
 	const { name, sub, iat, exp } = tokenPayload
-
-	// const [profiles, setProfiles] = useState([])
-	console.log(userInfos)
-	// useEffect(() => {
-	// 	console.log('getting new imagee')
-	// 	async function getNewProfiles() {
-	// 		const result = await fetch(`https://picsum.photos/200/300`, { // todo : replace pseudo by ID = sub
-	// 			method: 'GET', // *GET, POST, PUT, DELETE, etc.
-	// 			// headers: { 'Content-Type': 'application/json' }
-	// 		})
-	// 		console.log('getting new imagee')
-	// 		console.log(result)
-	// 		// const readableResult = await result.json()
-	// 		// console.log(readableResult)
-	// 		// setImage(readableResult)
-	// 	}
-
-	// 	getNewProfiles();
-	// }, []);
 
 	const [loveTarget, setLoveTarget] = useState({
 		id: -1,
@@ -71,6 +52,7 @@ const FindingLove = ({ user, userInfos, setNotificationDisplay }) => {
 			console.log('getting new imagee') // todo
 			if (result === "You matched !") {
 				setNotificationDisplay("It's a Match !")
+				setNewMatch(newMatch + 1)
 				const displayer = document.getElementById("eventsDisplay")
 				displayer.classList.add('displayer')
 				setTimeout(() => {

@@ -7,17 +7,20 @@ import Insights from './Insights';
 import Matches from './Matches';
 import EventsDisplay from './EventsDisplay';
 import { get, post } from './utils/Requests';
-import { Socket } from 'socket.io-client';
 
 const Dashboard = ({ user, setUser }) => {
   const tokenData64URL = user.token.split('.')[1]
   const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
   const tokenPayload = JSON.parse(atob(tokenB64))
   const { name, sub, iat, exp } = tokenPayload
-  const [socket, setSocket] = useState()
+
   const [notificationDisplay, setNotificationDisplay] = useState("")
+  const [nbUnseenMatches, setNbUnseenMatches] = useState(0)
+  const [tickUnseenMatch, setTickUnseenMatch] = useState(0)
   const [newChatMessage, _setNewChatMessage] = useState(0)
   const newChatMessageRef = useRef(newChatMessage)
+  const [newMatch, setNewMatch] = useState(0)
+  const [lovers, setLovers] = useState([])
 
   const setNewChatMessage = val => {
     newChatMessageRef.current = val
@@ -25,8 +28,34 @@ const Dashboard = ({ user, setUser }) => {
   }
 
   useEffect(() => {
+    const getMatchesList = async () => {
+      try {
+        setLovers(await get(`/lovers/${sub}`, user.token))
+      } catch (error) {
+        console.log('get matches error : ' + error)
+      }
+    }
+    getMatchesList()
+  }, [newMatch, tickUnseenMatch])
+
+  useEffect(() => {
+    let nbUnseenMatches = 0
+    for (const lover of lovers) {
+      if (lover.lover1 === sub) {
+        if (lover.seen_by_lover1 === 0) {
+          nbUnseenMatches++
+        }
+      } else if (lover.lover2 === sub) {
+        if (lover.seen_by_lover2 === 0) {
+          nbUnseenMatches++
+        }
+      }
+    }
+    setNbUnseenMatches(nbUnseenMatches)
+  }, [lovers])
+
+  useEffect(() => {
     const s = new WebSocket('ws://localhost:8080/ws/')
-    setSocket(s)
     s.onopen = () => {
       s.send(`/authenticate ${user.token}`)
     }
@@ -36,7 +65,7 @@ const Dashboard = ({ user, setUser }) => {
   const handleSocketMessage = event => {
     const socketMessage = JSON.parse(event.data)
     console.log("received a chat message ", socketMessage)
-    if (socketMessage.message_type === "chat") {
+    if (socketMessage.message_type === "chat" && socketMessage.poster_id !== sub) {
       setNotificationDisplay(`New message : ${socketMessage.message}`)
       const displayer = document.getElementById("eventsDisplay")
       displayer.classList.add('displayer')
@@ -56,7 +85,6 @@ const Dashboard = ({ user, setUser }) => {
   }
 
   const [date, setDate] = useState(Math.floor(Date.now() / 1000))
-  const [refresh, setRefresh] = useState(0)
 
   const [userInfos, setUserInfos] = useState({ // Note : also update the model in user settings
     id: -1,
@@ -88,17 +116,7 @@ const Dashboard = ({ user, setUser }) => {
   }, []);
 
 
-  // console.log(tokenPayload)
-  // console.log("token payload :", name, sub, iat, exp)
-
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     console.log("user token : ", user.token)
-  //     // setDate(Math.floor(Date.now() / 1000))
-  //   }, 3000)
-  //   return () => clearTimeout(timer);
-  // }, [])
-
+  // TODO
   const logout = () => {
     window.localStorage.setItem('refreshToken', "")
     window.sessionStorage.setItem('refreshToken', "")
@@ -111,9 +129,9 @@ const Dashboard = ({ user, setUser }) => {
         <div id="dashboard">
           {/* <div id="display"> */}
           <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
-          <FindingLove user={user} userInfos={userInfos} setNotificationDisplay={setNotificationDisplay} />
+          <FindingLove user={user} userInfos={userInfos} setNotificationDisplay={setNotificationDisplay} newMatch={newMatch} setNewMatch={setNewMatch} />
           {/* </div> */}
-          <ActivitySwitcher user={user} setUser={setUser} />
+          <ActivitySwitcher user={user} setUser={setUser} nbUnseenMatches={nbUnseenMatches} />
         </div>
       )
     } else if (user.activity === "user profile") {
@@ -123,7 +141,7 @@ const Dashboard = ({ user, setUser }) => {
           <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
           <UserSettings user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
           {/* </div> */}
-          <ActivitySwitcher user={user} setUser={setUser} />
+          <ActivitySwitcher user={user} setUser={setUser} nbUnseenMatches={nbUnseenMatches} />
         </div>
       )
     } else if (user.activity === "insights") {
@@ -133,7 +151,7 @@ const Dashboard = ({ user, setUser }) => {
           <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
           <Insights user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
           {/* </div> */}
-          <ActivitySwitcher user={user} setUser={setUser} />
+          <ActivitySwitcher user={user} setUser={setUser} nbUnseenMatches={nbUnseenMatches} />
         </div>
       )
 
@@ -142,9 +160,9 @@ const Dashboard = ({ user, setUser }) => {
         <div id="dashboard">
           {/* <div id="display"> */}
           <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
-          <Matches user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} newChatMessage={newChatMessage} />
+          <Matches user={user} lovers={lovers} newChatMessage={newChatMessage} tickUnseenMatch={tickUnseenMatch} setTickUnseenMatch={setTickUnseenMatch} />
           {/* </div> */}
-          <ActivitySwitcher user={user} setUser={setUser} />
+          <ActivitySwitcher user={user} setUser={setUser} nbUnseenMatches={nbUnseenMatches} />
         </div>
       )
     } else {

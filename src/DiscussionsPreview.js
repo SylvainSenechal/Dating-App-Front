@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
+import { get, post, put } from './utils/Requests';
 
-const DiscussionsPreview = ({ user, messages, setLoveID }) => {
+const DiscussionsPreview = ({ user, messages, setLoveID, lovers, tickUnseenMatch, setTickUnseenMatch }) => {
   const tokenData64URL = user.token.split('.')[1]
   const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
   const tokenPayload = JSON.parse(atob(tokenB64))
@@ -8,13 +9,32 @@ const DiscussionsPreview = ({ user, messages, setLoveID }) => {
 
 
 
-  const chatWith = e => {
+  const chatWith = async e => {
     const loveID = Number(e.currentTarget.dataset.index)
-    console.log(e)
-    console.log(loveID)
+    for (let lover of lovers) {
+      console.log(lover.love_id)
+      console.log(loveID)
+      if (lover.love_id === loveID) {
+        if (sub === lover.lover1 && lover.seen_by_lover1 === 0) {
+          try {
+            await put(`/lovers/${lover.love_id}/tick_love`, user.token)
+            setTickUnseenMatch(tickUnseenMatch + 1)
+          } catch (error) {
+            console.log(' tick love error : ' + error)
+          }
+        } else if (sub === lover.lover2 && lover.seen_by_lover2 === 0) {
+          try {
+            await put(`/lovers/${lover.love_id}/tick_love`, user.token)
+            setTickUnseenMatch(tickUnseenMatch + 1)
+          } catch (error) {
+            console.log(' tick love error : ' + error)
+          }
+        }
+      }
+    }
     setLoveID(loveID)
-    // socket.send(`/join ${loveID}`) // joining a love room 
   }
+
   console.log("rerender")
   const discussionPreview = () => {
     let content = []

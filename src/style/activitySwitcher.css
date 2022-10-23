@@ -1,0 +1,19 @@
+#matches {
+    position: relative;
+}
+
+#NbUnseenMatches {
+    position: absolute;
+    right: -0.7em;
+    top: -0.7em;
+    min-width: 1.6em;
+    height: 1.6em;
+    border-radius: 0.8em;
+    border: 0.05em solid white;
+    background-color: red;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.8em;
+    color: white;
+}

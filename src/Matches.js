@@ -2,10 +2,9 @@ import { useState, useEffect } from 'react';
 import Discussion from './Discussion';
 import UserSettings from './UserSettings';
 import DiscussionsPreview from './DiscussionsPreview';
-import { get, post } from './utils/Requests';
+import { get, post, put } from './utils/Requests';
 
-const Matches = ({ user, setUser, userInfos, setUserInfos, newChatMessage }) => {
-  const [lovers, setLovers] = useState([])
+const Matches = ({ user, lovers, newChatMessage, tickUnseenMatch, setTickUnseenMatch }) => {
   const [loveID, setLoveID] = useState(-1)
   const [messages, setMessages] = useState(new Map())
 
@@ -13,17 +12,6 @@ const Matches = ({ user, setUser, userInfos, setUserInfos, newChatMessage }) => 
   const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
   const tokenPayload = JSON.parse(atob(tokenB64))
   const { name, sub, iat, exp } = tokenPayload
-
-  useEffect(() => {
-    const getMatchesList = async () => {
-      try {
-        setLovers(await get(`/lovers/${sub}`, user.token))
-      } catch (error) {
-        console.log('get matches error : ' + error)
-      }
-    }
-    getMatchesList()
-  }, [])
 
   useEffect(() => {
     const getMessagesList = async () => {
@@ -44,17 +32,36 @@ const Matches = ({ user, setUser, userInfos, setUserInfos, newChatMessage }) => 
         console.log('get message list error : ' + error)
       }
     }
-    
+
     getMessagesList()
   }, [newChatMessage])
 
-  const chatWith = e => {
+  const chatWith = async e => {
     const loveID = Number(e.currentTarget.dataset.index)
+    for (let lover of lovers) {
+      console.log(lover.love_id)
+      console.log(loveID)
+      if (lover.love_id === loveID) {
+        if (sub === lover.lover1 && lover.seen_by_lover1 === 0) {
+          try {
+            await put(`/lovers/${lover.love_id}/tick_love`, user.token)
+            setTickUnseenMatch(tickUnseenMatch + 1)
+          } catch (error) {
+            console.log(' tick love error : ' + error)
+          }
+        } else if (sub === lover.lover2 && lover.seen_by_lover2 === 0) {
+          try {
+            await put(`/lovers/${lover.love_id}/tick_love`, user.token)
+            setTickUnseenMatch(tickUnseenMatch + 1)
+          } catch (error) {
+            console.log(' tick love error : ' + error)
+          }
+        }
+      }
+    }
     setLoveID(loveID)
   }
 
-
-  document.onclick = e => console.log(messages)
 
   // TODO : pinned lover feature
   return (
@@ -81,8 +88,8 @@ const Matches = ({ user, setUser, userInfos, setUserInfos, newChatMessage }) => 
       }
 
       {loveID === -1 ?
-        <DiscussionsPreview user={user} messages={messages} setLoveID={setLoveID} /> :
-        <Discussion user={user} loveID={loveID} setLoveID={setLoveID} newChatMessage={newChatMessage}/>
+        <DiscussionsPreview user={user} messages={messages} setLoveID={setLoveID} lovers={lovers} tickUnseenMatch={tickUnseenMatch} setTickUnseenMatch={setTickUnseenMatch} /> :
+        <Discussion user={user} loveID={loveID} setLoveID={setLoveID} newChatMessage={newChatMessage} />
       }
 
     </div>

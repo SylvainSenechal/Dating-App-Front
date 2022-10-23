@@ -7,8 +7,6 @@ const Discussion = ({ user, loveID, setLoveID, newChatMessage }) => {
   const tokenPayload = JSON.parse(atob(tokenB64))
   const { name, sub, iat, exp } = tokenPayload
 
-  // console.log(sub)
-  // console.log(loveID)
   const [newMessage, setNewMessage] = useState("")
   const [messages, setMessages] = useState([])
 
@@ -42,7 +40,6 @@ const Discussion = ({ user, loveID, setLoveID, newChatMessage }) => {
 
   useEffect(() => {
     const greenTickCurrentMessages = async () => {
-      console.log("TICKING")
       let messagesToTick = []
       for (let message of messages) {
         console.log(message)
@@ -52,8 +49,6 @@ const Discussion = ({ user, loveID, setLoveID, newChatMessage }) => {
           }
         }
       }
-      console.log("TICKING 1 ", messagesToTick)
-      console.log("TICKING 2 ", JSON.stringify(messagesToTick))
 
       try {
         await put(`/messages/tick_messages`, user.token, { messages: messagesToTick })
