@@ -62,6 +62,7 @@
 
 #discussion {
     /* margin-top: 1000px; */
+    position: relative;
     overflow: auto;
     height: 100%;
     display: flex;
@@ -100,6 +101,13 @@
     font-size: 0.8em;
     margin-top: -0.2em;
     margin-bottom: 0.1em;
+}
+
+#loverLasteSeen {
+    position: absolute;
+    left: 10px;
+    width: 95%;
+    border-top: 2px solid black;
 }
 
 #previewDiscussion {

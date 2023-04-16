@@ -1,93 +1,72 @@
-import { useState, useEffect, useRef } from 'react';
-import ImageUploader from './ImageUploader';
-import FindingLove from './FindingLove';
-import ActivitySwitcher from './ActivitySwitcher';
-import UserSettings from './UserSettings';
-import Insights from './Insights';
-import Matches from './Matches';
-import EventsDisplay from './EventsDisplay';
-import { get, post } from './utils/Requests';
+import { useState, useEffect, useRef } from "react";
+import ImageUploader from "./ImageUploader";
+import FindingLove from "./FindingLove";
+import ActivitySwitcher from "./ActivitySwitcher";
+import UserSettings from "./UserSettings";
+import Insights from "./Insights";
+import Matches from "./Matches";
+import EventsDisplay from "./EventsDisplay";
+import { get, post } from "./utils/Requests";
 
 const Dashboard = ({ user, setUser }) => {
-  const tokenData64URL = user.token.split('.')[1]
-  const tokenB64 = tokenData64URL.replace(/-/g, '+').replace(/_/g, '/')
-  const tokenPayload = JSON.parse(atob(tokenB64))
-  const { name, sub, iat, exp } = tokenPayload
+  const tokenData64URL = user.token.split(".")[1];
+  const tokenB64 = tokenData64URL.replace(/-/g, "+").replace(/_/g, "/");
+  const tokenPayload = JSON.parse(atob(tokenB64));
+  const { user_uuid, exp } = tokenPayload;
 
-  const [notificationDisplay, setNotificationDisplay] = useState("")
-  const [nbUnseenMatches, setNbUnseenMatches] = useState(0)
-  const [tickUnseenMatch, setTickUnseenMatch] = useState(0)
-  const [newChatMessage, _setNewChatMessage] = useState(0)
-  const newChatMessageRef = useRef(newChatMessage)
-  const [newMatch, setNewMatch] = useState(0)
-  const [lovers, setLovers] = useState([])
+  const [notificationDisplay, setNotificationDisplay] = useState("");
+  const [nbUnseenMatches, setNbUnseenMatches] = useState(0);
+  const [tickUnseenMatch, setTickUnseenMatch] = useState(0);
+  const [newChatMessage, _setNewChatMessage] = useState(0);
+  const newChatMessageRef = useRef(newChatMessage);
+  const [newMatch, setNewMatch] = useState(0);
+  const [lovers, setLovers] = useState([]);
+  const [newGreenTickLoveUUID, setNewGreenTickLoveUUID] = useState(0);
 
-  const setNewChatMessage = val => {
-    newChatMessageRef.current = val
-    _setNewChatMessage(val)
-  }
+  const setNewChatMessage = (val) => {
+    newChatMessageRef.current = val;
+    _setNewChatMessage(val);
+  };
+
+  console.log("OOOO ", tokenPayload);
 
   useEffect(() => {
     const getMatchesList = async () => {
       try {
-        setLovers(await get(`/lovers/${sub}`, user.token))
+        setLovers(await get(`/lovers/${user_uuid}`, user.token));
       } catch (error) {
-        console.log('get matches error : ' + error)
+        console.log("get matches error : " + error);
       }
-    }
-    getMatchesList()
-  }, [newMatch, tickUnseenMatch])
-
+    };
+    getMatchesList();
+  }, [newMatch, tickUnseenMatch]);
+  document.onclick = (e) => console.log(lovers);
   useEffect(() => {
-    let nbUnseenMatches = 0
+    let nbUnseenMatches = 0;
     for (const lover of lovers) {
-      if (lover.lover1 === sub) {
+      if (lover.lover1 === user_uuid) {
         if (lover.seen_by_lover1 === 0) {
-          nbUnseenMatches++
+          nbUnseenMatches++;
         }
-      } else if (lover.lover2 === sub) {
+      } else if (lover.lover2 === user_uuid) {
         if (lover.seen_by_lover2 === 0) {
-          nbUnseenMatches++
+          nbUnseenMatches++;
         }
       }
     }
-    setNbUnseenMatches(nbUnseenMatches)
-  }, [lovers])
+    setNbUnseenMatches(nbUnseenMatches);
+  }, [lovers]);
 
-  useEffect(() => {
-    const s = new WebSocket('ws://localhost:8080/ws/')
-    s.onopen = () => {
-      s.send(`/authenticate ${user.token}`)
-    }
-    s.addEventListener('message', handleSocketMessage)
-  }, [])
 
-  const handleSocketMessage = event => {
-    const socketMessage = JSON.parse(event.data)
-    console.log("received a chat message ", socketMessage)
-    if (socketMessage.message_type === "chat" && socketMessage.poster_id !== sub) {
-      setNotificationDisplay(`New message : ${socketMessage.message}`)
-      const displayer = document.getElementById("eventsDisplay")
-      displayer.classList.add('displayer')
-      setTimeout(() => {
-        displayer.classList.add('removedDisplayer')
-        setTimeout(() => { // reset classes to none after animation is over, TODO clean this 
-          displayer.classList.remove('displayer')
-          displayer.classList.remove('removedDisplayer')
-        }, 1000);
-      }, 3000);
 
-      setNewChatMessage(newChatMessageRef.current + 1)
-    }
-    if (socketMessage.message_type === "green_tick") { // TODO : opti green tick, don't reload all the messages..
-      setNewChatMessage(newChatMessageRef.current + 1)
-    }
-  }
+ 
 
-  const [date, setDate] = useState(Math.floor(Date.now() / 1000))
+  const [date, setDate] = useState(Math.floor(Date.now() / 1000));
 
-  const [userInfos, setUserInfos] = useState({ // Note : also update the model in user settings
-    id: -1,
+  const [userInfos, setUserInfos] = useState({
+    // Note : also update the model in user settings
+    uuid: "",
+    private_uuid: "",
     age: 0,
     password: "",
     name: "", // TODO : DO NOT SEND BACK THE PASSWORD
@@ -99,79 +78,178 @@ const Dashboard = ({ user, setUser }) => {
     search_radius: 0,
     looking_for_age_min: 0,
     looking_for_age_max: 0,
-    description: ""
-  })
+    description: "",
+  });
 
   useEffect(() => {
     async function getUserInfos() {
-      console.log("GETIING USER INFOS")
+      console.log("GETIING USER INFOS");
       try {
-        setUserInfos(await get(`/users/${sub}`, user.token))
+        setUserInfos(await get(`/users/${user_uuid}`, user.token));
       } catch (error) {
-        console.log('get user infos error : ' + error)
+        console.log("get user infos error : " + error);
       }
     }
 
     getUserInfos();
   }, []);
 
+  useEffect(() => {
+    var eventSource = new EventSource(
+      `http://localhost:8080/server_side_event/${userInfos.private_uuid}`
+    );
+
+    console.log(eventSource)
+
+    eventSource.addEventListener("update", (e) => {
+      console.log("received sse update:", JSON.parse(e.data));
+      const sse_message = JSON.parse(e.data)
+      switch (sse_message.message_type) {
+        case "ChatMessage":
+          console.log(sse_message.data.ChatMessage.message)
+          if (sse_message.data.ChatMessage.poster_uuid !== user_uuid) {
+
+            setNotificationDisplay(`New message : ${sse_message.data.ChatMessage.message}`);
+            const displayer = document.getElementById("eventsDisplay");
+            displayer.classList.add("displayer");
+            setTimeout(() => {
+              displayer.classList.add("removedDisplayer");
+              setTimeout(() => {
+                // reset classes to none after animation is over, TODO clean this
+                displayer.classList.remove("displayer");
+                displayer.classList.remove("removedDisplayer");
+              }, 1000);
+            }, 3000);
+         }
+    
+          setNewChatMessage(newChatMessageRef.current + 1);
+          break
+        case "GreenTickMessage":
+          console.log(sse_message.data)
+          setNewGreenTickLoveUUID(sse_message.data.GreenTickMessage.uuid_love_room + "," + Math.random() * 100000)
+            // setNewChatMessage(newChatMessageRef.current + 1);
+          break
+      }
+    });
+  }, [userInfos]);
 
   // TODO
   const logout = () => {
-    window.localStorage.setItem('refreshToken', "")
-    window.sessionStorage.setItem('refreshToken', "")
-    setUser(prev => ({ ...prev, loggedIn: false, keepConnected: false, token: "", refreshToken: "" }))
-  }
+    window.localStorage.setItem("refreshToken", "");
+    window.sessionStorage.setItem("refreshToken", "");
+    setUser((prev) => ({
+      ...prev,
+      loggedIn: false,
+      keepConnected: false,
+      token: "",
+      refreshToken: "",
+    }));
+  };
 
   const render = () => {
     if (user.activity === "finding love") {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
-          <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
-          <FindingLove user={user} userInfos={userInfos} setNotificationDisplay={setNotificationDisplay} newMatch={newMatch} setNewMatch={setNewMatch} />
+          <EventsDisplay
+            user={user}
+            notificationDisplay={notificationDisplay}
+          />
+          <FindingLove
+            user={user}
+            userInfos={userInfos}
+            setNotificationDisplay={setNotificationDisplay}
+            newMatch={newMatch}
+            setNewMatch={setNewMatch}
+          />
           {/* </div> */}
-          <ActivitySwitcher user={user} setUser={setUser} nbUnseenMatches={nbUnseenMatches} />
+          <ActivitySwitcher
+            user={user}
+            setUser={setUser}
+            nbUnseenMatches={nbUnseenMatches}
+          />
         </div>
-      )
+      );
     } else if (user.activity === "user profile") {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
-          <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
-          <UserSettings user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
+          <EventsDisplay
+            user={user}
+            notificationDisplay={notificationDisplay}
+          />
+          <UserSettings
+            user={user}
+            setUser={setUser}
+            userInfos={userInfos}
+            setUserInfos={setUserInfos}
+          />
           {/* </div> */}
-          <ActivitySwitcher user={user} setUser={setUser} nbUnseenMatches={nbUnseenMatches} />
+          <ActivitySwitcher
+            user={user}
+            setUser={setUser}
+            nbUnseenMatches={nbUnseenMatches}
+          />
         </div>
-      )
+      );
     } else if (user.activity === "insights") {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
-          <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
-          <Insights user={user} setUser={setUser} userInfos={userInfos} setUserInfos={setUserInfos} />
+          <EventsDisplay
+            user={user}
+            notificationDisplay={notificationDisplay}
+          />
+          <Insights
+            user={user}
+            setUser={setUser}
+            userInfos={userInfos}
+            setUserInfos={setUserInfos}
+          />
           {/* </div> */}
-          <ActivitySwitcher user={user} setUser={setUser} nbUnseenMatches={nbUnseenMatches} />
+          <ActivitySwitcher
+            user={user}
+            setUser={setUser}
+            nbUnseenMatches={nbUnseenMatches}
+          />
         </div>
-      )
-
+      );
     } else if (user.activity === "matches") {
       return (
         <div id="dashboard">
           {/* <div id="display"> */}
-          <EventsDisplay user={user} notificationDisplay={notificationDisplay} />
-          <Matches user={user} lovers={lovers} newChatMessage={newChatMessage} tickUnseenMatch={tickUnseenMatch} setTickUnseenMatch={setTickUnseenMatch} />
+          <EventsDisplay
+            user={user}
+            notificationDisplay={notificationDisplay}
+          />
+          <Matches
+            user={user}
+            lovers={lovers}
+            newChatMessage={newChatMessage}
+            tickUnseenMatch={tickUnseenMatch}
+            setTickUnseenMatch={setTickUnseenMatch}
+            newGreenTickLoveUUID={newGreenTickLoveUUID}
+          />
           {/* </div> */}
-          <ActivitySwitcher user={user} setUser={setUser} nbUnseenMatches={nbUnseenMatches} />
+          <ActivitySwitcher
+            user={user}
+            setUser={setUser}
+            nbUnseenMatches={nbUnseenMatches}
+          />
         </div>
-      )
+      );
     } else {
-      return ( // TODO : remove this part ?
+      return (
+        // TODO : remove this part ?
         <div id="dashboardOut">
           <div id="dashboardIn">
             <div id="infos" className="dashboardElement">
-              <div> Hello {name}, your id is {sub} </div>
-              <div> Your token is valid for {exp - date} second{(exp - date) > 1 ? 's' : ''} </div>
+              {/* <div> Hello {name}, your id is {user_uuid} </div> */}
+              <div>
+                {" "}
+                Your token is valid for {exp - date} second
+                {exp - date > 1 ? "s" : ""}{" "}
+              </div>
             </div>
             <div id="logout" className="dashboardElement">
               <button onClick={logout}> Logout </button>
@@ -179,11 +257,11 @@ const Dashboard = ({ user, setUser }) => {
             <ImageUploader token={user.token} />
           </div>
         </div>
-      )
+      );
     }
-  }
+  };
 
-  return render()
-}
+  return render();
+};
 
 export default Dashboard;
