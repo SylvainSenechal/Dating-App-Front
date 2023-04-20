@@ -22,6 +22,25 @@ const Dashboard = ({ user, setUser }) => {
   const [newMatch, setNewMatch] = useState(0);
   const [lovers, setLovers] = useState([]);
   const [newGreenTickLoveUUID, setNewGreenTickLoveUUID] = useState(0);
+  const [date, setDate] = useState(Math.floor(Date.now() / 1000));
+
+  const [userInfos, setUserInfos] = useState({
+    // Note : also update the model in user settings
+    uuid: "",
+    private_uuid: "",
+    age: 0,
+    password: "",
+    name: "", // TODO : DO NOT SEND BACK THE PASSWORD
+    email: "",
+    gender: "",
+    looking_for: "",
+    latitude: 0,
+    longitude: 0,
+    search_radius: 0,
+    looking_for_age_min: 0,
+    looking_for_age_max: 0,
+    description: "",
+  });
 
   const setNewChatMessage = (val) => {
     newChatMessageRef.current = val;
@@ -56,30 +75,6 @@ const Dashboard = ({ user, setUser }) => {
     }
     setNbUnseenMatches(nbUnseenMatches);
   }, [lovers]);
-
-
-
- 
-
-  const [date, setDate] = useState(Math.floor(Date.now() / 1000));
-
-  const [userInfos, setUserInfos] = useState({
-    // Note : also update the model in user settings
-    uuid: "",
-    private_uuid: "",
-    age: 0,
-    password: "",
-    name: "", // TODO : DO NOT SEND BACK THE PASSWORD
-    email: "",
-    gender: "",
-    looking_for: "",
-    latitude: 0,
-    longitude: 0,
-    search_radius: 0,
-    looking_for_age_min: 0,
-    looking_for_age_max: 0,
-    description: "",
-  });
 
   useEffect(() => {
     async function getUserInfos() {

@@ -20,6 +20,8 @@ const FindingLove = ({
     age: 0,
     description: "",
     last_seen: "",
+    gender: "",
+    distance: 0
   });
   const [ImageIdShown, setImageIdShown] = useState(0);
   const [imagesTarget, setImagesTarget] = useState([
@@ -46,12 +48,17 @@ const FindingLove = ({
           age: 0,
           description: "",
           last_seen: "",
+          gender: "",
+          distance: 0
         });
       }
     }
     getNewProfile();
   }, [findNewLover]);
-
+  document.onclick = e => {
+    console.log("oui")
+    console.log(loveTarget)
+  }
   const swipe = async (love) => {
     try {
       const result = await post(`/users/swipe`, user.token, {
@@ -59,7 +66,7 @@ const FindingLove = ({
         love: love,
       });
       console.log("getting new imagee"); // todo
-      if (result === "You matched !") {
+      if (result === "matched") {
         setNotificationDisplay("It's a Match !");
         setNewMatch(newMatch + 1);
         const displayer = document.getElementById("eventsDisplay");
@@ -186,7 +193,7 @@ const FindingLove = ({
             </div>{" "}
             {/* TODO : truncate the string to 100 ~chars */}
             <div className="targetInfos"> {displayLastSeen} 👀 </div>
-            <div className="targetInfos"> Distance : {distanceTarget} km </div>
+            <div className="targetInfos"> Distance : {loveTarget.distance} km </div>
             <div id="actionButtons">
               <button onClick={swipeLeft}> Hate </button>
               <button onClick={showTargetDetails}> Details </button>

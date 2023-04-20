@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { get, post, put, deleteReq } from "./utils/Requests";
+import { get, getQuery, post, put, deleteReq } from "./utils/Requests";
 
 const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
   console.log(userInfos);
@@ -28,6 +28,7 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
     looking_for_age_max: 0,
     description: "",
   });
+  const [nbPotentialMatched, setNbPotentialMatched] = useState(0);
 
   useEffect(() => {
     async function getUserInfos() {
@@ -45,10 +46,31 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
     getUserInfos();
   }, []);
 
+	useEffect(() => {
+    async function getMatchingPotential() {
+			try {
+				console.log("aaa ", userInfos)
+				console.log("aaa ", userInfos.looking_for)
+        setNbPotentialMatched(await getQuery(`/users/${user_uuid}/statistics/matching_potential`, user.token, {
+					looking_for: userInfos.looking_for,
+					search_radius: userInfos.search_radius,
+					latitude: userInfos.latitude,
+					longitude: userInfos.longitude,
+					looking_for_age_min: userInfos.looking_for_age_min,
+					looking_for_age_max: userInfos.looking_for_age_max,
+				}));
+      } catch (error) {
+        console.log("get user potential matches error : " + error);
+      }
+    }
+
+    getMatchingPotential();
+  }, [userInfos]);
+
   const updateUser = async () => {
     try {
       const result = await put(`/users/${user_uuid}`, user.token, userInfos);
-      setUserModified(userInfos);
+      setUserInfosModel(userInfos);
       setUserModified(false);
     } catch (error) {
       console.log("update user infos error : " + error);
@@ -68,7 +90,6 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
     for (const [key, val] of Object.entries(userInfos)) {
       if (val != userInfosModel[key]) {
         console.log(key, val, userInfosModel[key]);
-        console.log("heeeee");
         modified = true;
         break;
       }
@@ -81,6 +102,7 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
   return (
     <div className="display" id="userProfile">
       <div id="privateInfos">
+				<div> nbPotentialMatched: {nbPotentialMatched} </div>
         <p className="updateCategories">Private infos</p>
 
         <div className="inputsAlign" id="email">

@@ -23,6 +23,27 @@ const get = async (url, jwtToken) => {
   throw `Get request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
 }
 
+const getQuery = async (url, jwtToken, params) => {
+  const getResult = await fetch(`${envData.apiURL}${url}?${new URLSearchParams(params)}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${jwtToken}`,
+      'Trace': generateTraceID()
+    },
+  })
+  const readableResult = await getResult.json()
+
+  console.log("url ", url)
+  console.log('get response code : ' + readableResult.code)
+  console.log('get response message : ' + readableResult.message)
+  console.log('get response data : ' + readableResult.data)
+  if (getResult.status === STATUS_OK) {
+    return readableResult.data
+  }
+  throw `Get query request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
+}
+
 const post = async (url, jwtToken, data) => {
   const postResult = await fetch(`${envData.apiURL}${url}`, {
     method: 'POST',
@@ -88,4 +109,4 @@ const deleteReq = async (url, jwtToken, data) => {
 
 const generateTraceID = () => Math.floor(Math.random() * Math.pow(2, 63)) + 1
 
-export { get, post, put, deleteReq };
+export { get, getQuery, post, put, deleteReq };
