@@ -97,8 +97,30 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
     setUserModified(modified);
   }, [userInfos]);
 
-  // TODO : bouton update change color when a change happened
-  // s'assurer qu'on ne peut que show son propre profile
+	const setLatitudeToCurrent = e => {
+		const geo = navigator.geolocation;
+    geo.getCurrentPosition((position) => {
+      console.log(position);
+      const { latitude, _ } = position.coords;
+			setUserInfos((prev) => ({
+				...prev,
+				latitude: latitude,
+			}))
+    });
+	}
+
+	const setLongitudeToCurrent = e => {
+		const geo = navigator.geolocation;
+    geo.getCurrentPosition((position) => {
+      console.log(position);
+      const { _, longitude } = position.coords;
+			setUserInfos((prev) => ({
+				...prev,
+				longitude: longitude,
+			}))
+    });
+	}
+
   return (
     <div className="display" id="userProfile">
       <div id="privateInfos">
@@ -171,6 +193,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 
         <div className="inputsAlign" id="latitude">
           <label> Position latitude: </label>
+					<button onClick={setLatitudeToCurrent}>
+        		Get current
+      		</button>
           <input
             type="number"
             id="userLatitude"
@@ -186,6 +211,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 
         <div className="inputsAlign" id="longitude">
           <label> Position longitude: </label>
+					<button onClick={setLongitudeToCurrent}>
+        		Get current
+      		</button>
           <input
             type="number"
             id="userLongitude"

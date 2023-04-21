@@ -12,15 +12,10 @@ const get = async (url, jwtToken) => {
     },
   })
   const readableResult = await getResult.json()
-
-  console.log("url ", url)
-  console.log('get response code : ' + readableResult.code)
-  console.log('get response message : ' + readableResult.message)
-  console.log('get response data : ' + readableResult.data)
-  if (getResult.status === STATUS_OK) {
-    return readableResult.data
+  if (!getResult.ok) {
+    throw `Get request error : code=${getResult.status}, error_code=${readableResult.error_code} message=${readableResult.error_message}`
   }
-  throw `Get request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
+  return readableResult.data
 }
 
 const getQuery = async (url, jwtToken, params) => {
@@ -33,15 +28,10 @@ const getQuery = async (url, jwtToken, params) => {
     },
   })
   const readableResult = await getResult.json()
-
-  console.log("url ", url)
-  console.log('get response code : ' + readableResult.code)
-  console.log('get response message : ' + readableResult.message)
-  console.log('get response data : ' + readableResult.data)
-  if (getResult.status === STATUS_OK) {
-    return readableResult.data
+  if (!getResult.ok) {
+    throw `Get request query error : code=${getResult.status}, error_code=${readableResult.error_code} message=${readableResult.error_message}`
   }
-  throw `Get query request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
+  return readableResult.data
 }
 
 const post = async (url, jwtToken, data) => {
@@ -55,18 +45,14 @@ const post = async (url, jwtToken, data) => {
     body: JSON.stringify(data)
   })
   const readableResult = await postResult.json()
-
-  console.log('post response code : ' + readableResult.code)
-  console.log('post response message : ' + readableResult.message)
-  console.log('post response data : ' + readableResult.data)
-  if (postResult.status === STATUS_OK) {
-    return readableResult.data
+  if (!postResult.ok) {
+    throw `Get request query error : code=${postResult.status}, error_code=${readableResult.error_code} message=${readableResult.error_message}`
   }
-  throw `Post request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
+  return readableResult.data
 }
 
 const put = async (url, jwtToken, data) => {
-  const postResult = await fetch(`${envData.apiURL}${url}`, {
+  const putResult = await fetch(`${envData.apiURL}${url}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
@@ -75,19 +61,15 @@ const put = async (url, jwtToken, data) => {
     },
     body: JSON.stringify(data)
   })
-  const readableResult = await postResult.json()
-
-  console.log('put response code : ' + readableResult.code)
-  console.log('put response message : ' + readableResult.message)
-  console.log('put response data : ' + readableResult.data)
-  if (postResult.status === STATUS_OK) {
-    return readableResult.data
+  const readableResult = await putResult.json()
+  if (!putResult.ok) {
+    throw `Put request query error : code=${putResult.status}, error_code=${readableResult.error_code} message=${readableResult.error_message}`
   }
-  throw `Put request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
+  return readableResult.data
 }
 
 const deleteReq = async (url, jwtToken, data) => {
-  const postResult = await fetch(`${envData.apiURL}${url}`, {
+  const deleteResult = await fetch(`${envData.apiURL}${url}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -96,15 +78,11 @@ const deleteReq = async (url, jwtToken, data) => {
     },
     body: JSON.stringify(data)
   })
-  const readableResult = await postResult.json()
-
-  console.log('delete response code : ' + readableResult.code)
-  console.log('delete response message : ' + readableResult.message)
-  console.log('delete response data : ' + readableResult.data)
-  if (postResult.status === STATUS_OK) {
-    return readableResult.data
+  const readableResult = await deleteResult.json()
+  if (!deleteResult.ok) {
+    throw `Delete request query error : code=${deleteResult.status}, error_code=${readableResult.error_code} message=${readableResult.error_message}`
   }
-  throw `Delete request error : code=${readableResult.code}, message=${readableResult.message}, data=${readableResult.data}`
+  return readableResult.data
 }
 
 const generateTraceID = () => Math.floor(Math.random() * Math.pow(2, 63)) + 1
