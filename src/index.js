@@ -6,6 +6,8 @@ import './style/matches.css';
 import './style/findLove.css';
 import './style/eventsDisplay.css';
 import './style/activitySwitcher.css'
+import './style/userSettings.css'
+import './style/animations.css'
 import App from './App';
 
 ReactDOM.render(

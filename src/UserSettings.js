@@ -33,6 +33,11 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
     getMatchingPotential();
   }, [userInfosUpdate]);
 
+	useEffect(() => {
+		document.getElementById("nbPotentialMatch").style.animation = "shake 1s"
+		setTimeout(() => document.getElementById("nbPotentialMatch").style.animation = "", 1000)
+	}, [nbPotentialMatched])
+
   const updateUser = async () => {
     try {
       const result = await put(`/users/${user_uuid}`, user.token, userInfosUpdate);
@@ -105,7 +110,6 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
   return (
     <div className="display" id="userProfile">
       <div id="privateInfos">
-				<div> nbPotentialMatched: {nbPotentialMatched} </div>
         <p className="updateCategories">Private infos</p>
 
         <div className="inputsAlign" id="email">
@@ -230,6 +234,8 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 
       <div id="matchingSettings">
         <p className="updateCategories">Matching settings</p>
+				<div> Users fitting your filters : <div id="nbPotentialMatch"> {nbPotentialMatched} </div> </div>
+
 
         <div className="inputsAlign" id="lookingFor">
           <label> Looking for: </label>
