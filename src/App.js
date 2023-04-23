@@ -1,9 +1,8 @@
 import { useState, useEffect } from "react";
 import Login from "./Login";
 import Dashboard from "./Dashboard";
-import { get, post } from "./utils/Requests";
+import { post } from "./utils/Requests";
 
-// TODO : utiliser session storage au lieu de user
 const envData = {
   apiURL:
     process.env.NODE_ENV === "production" ? "TODO" : "http://localhost:8080",
@@ -11,7 +10,6 @@ const envData = {
 export { envData };
 
 const App = (props) => {
-  console.log("App props : ", props);
   const [user, setUser] = useState({
     loggedIn: false,
     keepConnected: false,
@@ -29,7 +27,7 @@ const App = (props) => {
         const tokenData64URL = refreshToken.split(".")[1];
         const tokenB64 = tokenData64URL.replace(/-/g, "+").replace(/_/g, "/");
         const tokenPayload = JSON.parse(atob(tokenB64));
-        const { name, userUuid, iat, exp } = tokenPayload;
+        const { exp } = tokenPayload;
         console.log(exp);
         console.log(Date.now() / 1000 + 5);
         if (Date.now() / 1000 + 5 < exp) {
@@ -87,7 +85,7 @@ const App = (props) => {
         const tokenData64URL = user.token.split(".")[1];
         const tokenB64 = tokenData64URL.replace(/-/g, "+").replace(/_/g, "/");
         const tokenPayload = JSON.parse(atob(tokenB64));
-        const { name, userUuid, iat, exp } = tokenPayload;
+        const { exp } = tokenPayload;
         const margin = 5; // We refresh the token x seconds before it actually expires
         // console.log(Date.now() / 1000 + margin - exp)
         if (Date.now() / 1000 + margin - exp > 0) {

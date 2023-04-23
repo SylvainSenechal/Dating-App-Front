@@ -6,7 +6,7 @@ const Insights = ({ user, setUser, userInfos, setUserInfos }) => {
   const tokenData64URL = user.token.split(".")[1];
   const tokenB64 = tokenData64URL.replace(/-/g, "+").replace(/_/g, "/");
   const tokenPayload = JSON.parse(atob(tokenB64));
-  const { user_uuid, exp } = tokenPayload;
+  const { user_uuid } = tokenPayload;
 
   const [loved, setLoved] = useState(0);
   const [rejections, setRejections] = useState(0);

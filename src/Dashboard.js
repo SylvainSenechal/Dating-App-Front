@@ -6,13 +6,13 @@ import UserSettings from "./UserSettings";
 import Insights from "./Insights";
 import Matches from "./Matches";
 import EventsDisplay from "./EventsDisplay";
-import { get, post } from "./utils/Requests";
+import { get } from "./utils/Requests";
 
 const Dashboard = ({ user, setUser }) => {
   const tokenData64URL = user.token.split(".")[1];
   const tokenB64 = tokenData64URL.replace(/-/g, "+").replace(/_/g, "/");
   const tokenPayload = JSON.parse(atob(tokenB64));
-  const { user_uuid, exp } = tokenPayload;
+  const { user_uuid } = tokenPayload;
 
   const [notificationDisplay, setNotificationDisplay] = useState("");
   const [nbUnseenMatches, setNbUnseenMatches] = useState(0);
@@ -22,15 +22,13 @@ const Dashboard = ({ user, setUser }) => {
   const [newMatch, setNewMatch] = useState(0);
   const [lovers, setLovers] = useState([]);
   const [newGreenTickLoveUUID, setNewGreenTickLoveUUID] = useState(0);
-  const [date, setDate] = useState(Math.floor(Date.now() / 1000));
 
   const [userInfos, setUserInfos] = useState({
     // Note : also update the model in user settings
     uuid: "",
     private_uuid: "",
     age: 0,
-    password: "",
-    name: "", // TODO : DO NOT SEND BACK THE PASSWORD
+    name: "",
     email: "",
     gender: "",
     looking_for: "",
@@ -41,13 +39,14 @@ const Dashboard = ({ user, setUser }) => {
     looking_for_age_max: 0,
     description: "",
   });
+  document.onclick = e => {
+    console.log(userInfos)
+  }
 
   const setNewChatMessage = (val) => {
     newChatMessageRef.current = val;
     _setNewChatMessage(val);
   };
-
-  console.log("OOOO ", tokenPayload);
 
   useEffect(() => {
     const getMatchesList = async () => {
@@ -59,7 +58,7 @@ const Dashboard = ({ user, setUser }) => {
     };
     getMatchesList();
   }, [newMatch, tickUnseenMatch]);
-  document.onclick = (e) => console.log(lovers);
+
   useEffect(() => {
     let nbUnseenMatches = 0;
     for (const lover of lovers) {
@@ -78,7 +77,6 @@ const Dashboard = ({ user, setUser }) => {
 
   useEffect(() => {
     async function getUserInfos() {
-      console.log("GETIING USER INFOS");
       try {
         setUserInfos(await get(`/users/${user_uuid}`, user.token));
       } catch (error) {
@@ -93,17 +91,12 @@ const Dashboard = ({ user, setUser }) => {
     var eventSource = new EventSource(
       `http://localhost:8080/server_side_event/${userInfos.private_uuid}`
     );
-
-    console.log(eventSource)
-
     eventSource.addEventListener("update", (e) => {
       console.log("received sse update:", JSON.parse(e.data));
       const sse_message = JSON.parse(e.data)
       switch (sse_message.message_type) {
         case "ChatMessage":
-          console.log(sse_message.data.ChatMessage.message)
           if (sse_message.data.ChatMessage.poster_uuid !== user_uuid) {
-
             setNotificationDisplay(`New message : ${sse_message.data.ChatMessage.message}`);
             const displayer = document.getElementById("eventsDisplay");
             displayer.classList.add("displayer");
@@ -122,7 +115,6 @@ const Dashboard = ({ user, setUser }) => {
         case "GreenTickMessage":
           console.log(sse_message.data)
           setNewGreenTickLoveUUID(sse_message.data.GreenTickMessage.uuid_love_room + "," + Math.random() * 100000)
-            // setNewChatMessage(newChatMessageRef.current + 1);
           break
       }
     });
@@ -239,12 +231,6 @@ const Dashboard = ({ user, setUser }) => {
         <div id="dashboardOut">
           <div id="dashboardIn">
             <div id="infos" className="dashboardElement">
-              {/* <div> Hello {name}, your id is {user_uuid} </div> */}
-              <div>
-                {" "}
-                Your token is valid for {exp - date} second
-                {exp - date > 1 ? "s" : ""}{" "}
-              </div>
             </div>
             <div id="logout" className="dashboardElement">
               <button onClick={logout}> Logout </button>

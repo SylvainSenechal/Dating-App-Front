@@ -21,12 +21,9 @@ const Login = ({ setUser }) => {
   const [messageRegister, setMessageRegister] = useState("");
   const [keepConnected, setKeepConnected] = useState(false);
 
-  console.log(registerData);
-
   useEffect(() => {
     const geo = navigator.geolocation;
     geo.getCurrentPosition((position) => {
-      console.log(position);
       const { latitude, longitude } = position.coords;
       setRegisterData((prev) => ({
         ...prev,
@@ -40,7 +37,7 @@ const Login = ({ setUser }) => {
     event.preventDefault();
 
     try {
-      let result = await post(`/users`, undefined, registerData);
+      await post(`/users`, undefined, registerData);
       setMessageRegister("User created successfully");
     } catch (error) {
       console.log("registering error : " + error);

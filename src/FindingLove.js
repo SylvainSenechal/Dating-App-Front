@@ -55,10 +55,7 @@ const FindingLove = ({
     }
     getNewProfile();
   }, [findNewLover]);
-  document.onclick = e => {
-    console.log("oui")
-    console.log(loveTarget)
-  }
+
   const swipe = async (love) => {
     try {
       const result = await post(`/users/swipe`, user.token, {

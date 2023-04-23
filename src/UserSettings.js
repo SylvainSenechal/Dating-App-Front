@@ -2,62 +2,28 @@ import { useState, useEffect } from "react";
 import { get, getQuery, post, put, deleteReq } from "./utils/Requests";
 
 const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
-  console.log(userInfos);
-  // TODO : watch out you should be modifying some user copy and only the real user info once the update is done,
-  // here even if not clicking update button, if you do some change userInfos will be changed for the rest of the fronted..
-
   const tokenData64URL = user.token.split(".")[1];
   const tokenB64 = tokenData64URL.replace(/-/g, "+").replace(/_/g, "/");
   const tokenPayload = JSON.parse(atob(tokenB64));
-  const { user_uuid, exp } = tokenPayload;
+  const { user_uuid } = tokenPayload;
 
   const [userModified, setUserModified] = useState(false);
-  const [userInfosModel, setUserInfosModel] = useState({
-    // Note : also update the model in user settings
-    uuid: "",
-    age: 0,
-    password: "",
-    name: "",
-    email: "",
-    gender: "",
-    looking_for: "",
-    latitude: 0,
-    longitude: 0,
-    search_radius: 0,
-    looking_for_age_min: 0,
-    looking_for_age_max: 0,
-    description: "",
-  });
+  const [userInfosUpdate, setUserInfosUpdate] = useState(userInfos)
   const [nbPotentialMatched, setNbPotentialMatched] = useState(0);
-
-  useEffect(() => {
-    async function getUserInfos() {
-      console.log("GETIING USER INFOS");
-      try {
-        const result = await get(`/users/${user_uuid}`, user.token);
-        setUserInfos(result);
-        setUserInfosModel(result);
-        setUserModified(false);
-      } catch (error) {
-        console.log("get user infos error : " + error);
-      }
-    }
-
-    getUserInfos();
-  }, []);
+  const [deleteWarning, setDeleteWarning] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [showWrongPassword, setShowWrongPassword] = useState(false);
 
 	useEffect(() => {
     async function getMatchingPotential() {
 			try {
-				console.log("aaa ", userInfos)
-				console.log("aaa ", userInfos.looking_for)
         setNbPotentialMatched(await getQuery(`/users/${user_uuid}/statistics/matching_potential`, user.token, {
-					looking_for: userInfos.looking_for,
-					search_radius: userInfos.search_radius,
-					latitude: userInfos.latitude,
-					longitude: userInfos.longitude,
-					looking_for_age_min: userInfos.looking_for_age_min,
-					looking_for_age_max: userInfos.looking_for_age_max,
+					looking_for: userInfosUpdate.looking_for,
+					search_radius: userInfosUpdate.search_radius,
+					latitude: userInfosUpdate.latitude,
+					longitude: userInfosUpdate.longitude,
+					looking_for_age_min: userInfosUpdate.looking_for_age_min,
+					looking_for_age_max: userInfosUpdate.looking_for_age_max,
 				}));
       } catch (error) {
         console.log("get user potential matches error : " + error);
@@ -65,21 +31,39 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
     }
 
     getMatchingPotential();
-  }, [userInfos]);
+  }, [userInfosUpdate]);
 
   const updateUser = async () => {
     try {
-      const result = await put(`/users/${user_uuid}`, user.token, userInfos);
-      setUserInfosModel(userInfos);
+      const result = await put(`/users/${user_uuid}`, user.token, userInfosUpdate);
+      setUserInfos(userInfosUpdate);
       setUserModified(false);
     } catch (error) {
       console.log("update user infos error : " + error);
     }
   };
 
-  const deleteUser = async () => {
+  const deleteUser = async (e) => {
+    e.preventDefault();
     try {
-      await deleteReq(`/users/${user_uuid}`, user.token);
+      const result = await deleteReq(`/users/${user_uuid}`, user.token, {
+				password: deletePassword
+			});
+			console.log(result)
+			if (result.message === "user deleted successfully") {
+				window.localStorage.setItem("refreshToken", "");
+				window.sessionStorage.setItem("refreshToken", "");
+				setUser((prev) => ({
+					...prev,
+					loggedIn: false,
+					keepConnected: false,
+					token: "",
+					refreshToken: "",
+				}));
+			} else if (result.message == "wrong password" ) {
+				console.log("oui")
+				setShowWrongPassword(true)
+			}
     } catch (error) {
       console.log("delete user infos error : " + error);
     }
@@ -87,22 +71,20 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 
   useEffect(() => {
     let modified = false;
-    for (const [key, val] of Object.entries(userInfos)) {
-      if (val != userInfosModel[key]) {
-        console.log(key, val, userInfosModel[key]);
+    for (const [key, val] of Object.entries(userInfosUpdate)) {
+      if (val != userInfos[key]) {
         modified = true;
         break;
       }
     }
     setUserModified(modified);
-  }, [userInfos]);
+  }, [userInfosUpdate]);
 
 	const setLatitudeToCurrent = e => {
 		const geo = navigator.geolocation;
     geo.getCurrentPosition((position) => {
-      console.log(position);
       const { latitude, _ } = position.coords;
-			setUserInfos((prev) => ({
+			setUserInfosUpdate((prev) => ({
 				...prev,
 				latitude: latitude,
 			}))
@@ -112,9 +94,8 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 	const setLongitudeToCurrent = e => {
 		const geo = navigator.geolocation;
     geo.getCurrentPosition((position) => {
-      console.log(position);
       const { _, longitude } = position.coords;
-			setUserInfos((prev) => ({
+			setUserInfosUpdate((prev) => ({
 				...prev,
 				longitude: longitude,
 			}))
@@ -132,9 +113,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           <input
             type="text"
             id="userMail"
-            value={userInfos.email}
+            value={userInfosUpdate.email}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 email: e.target.value,
               }))
@@ -151,9 +132,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           <input
             type="text"
             id="userName"
-            value={userInfos.name}
+            value={userInfosUpdate.name}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 name: e.target.value,
               }))
@@ -166,9 +147,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           <input
             type="number"
             id="userAge"
-            value={userInfos.age}
+            value={userInfosUpdate.age}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 age: Number(e.target.value),
               }))
@@ -181,9 +162,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           <input
             type="text"
             id="userGender"
-            value={userInfos.gender}
+            value={userInfosUpdate.gender}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 gender: e.target.value,
               }))
@@ -193,38 +174,42 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 
         <div className="inputsAlign" id="latitude">
           <label> Position latitude: </label>
-					<button onClick={setLatitudeToCurrent}>
+					<div> 
+					<button className="btnGetCurrentPosition" onClick={setLatitudeToCurrent}>
         		Get current
       		</button>
           <input
             type="number"
             id="userLatitude"
-            value={userInfos.latitude}
+            value={userInfosUpdate.latitude}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 latitude: Number(e.target.value),
               }))
             }
           />
+					</div>
         </div>
 
         <div className="inputsAlign" id="longitude">
           <label> Position longitude: </label>
-					<button onClick={setLongitudeToCurrent}>
+					<div>
+					<button className="btnGetCurrentPosition" onClick={setLongitudeToCurrent}>
         		Get current
       		</button>
           <input
             type="number"
             id="userLongitude"
-            value={userInfos.longitude}
+            value={userInfosUpdate.longitude}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 longitude: Number(e.target.value),
               }))
             }
           />
+					</div>
         </div>
 
         <div className="inputsAlign" id="description">
@@ -232,9 +217,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           <input
             type="text"
             id="userDescription"
-            value={userInfos.description}
+            value={userInfosUpdate.description}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 description: e.target.value,
               }))
@@ -251,9 +236,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           <input
             type="text"
             id="userLookingFor"
-            value={userInfos.looking_for}
+            value={userInfosUpdate.looking_for}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 looking_for: e.target.value,
               }))
@@ -266,9 +251,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           <input
             type="number"
             id="userSearchRadius"
-            value={userInfos.search_radius}
+            value={userInfosUpdate.search_radius}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 search_radius: Number(e.target.value),
               }))
@@ -281,9 +266,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           <input
             type="number"
             id="userLookingForMin"
-            value={userInfos.looking_for_age_min}
+            value={userInfosUpdate.looking_for_age_min}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 looking_for_age_min: Number(e.target.value),
               }))
@@ -296,9 +281,9 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           <input
             type="number"
             id="userLookingForMax"
-            value={userInfos.looking_for_age_max}
+            value={userInfosUpdate.looking_for_age_max}
             onChange={(e) =>
-              setUserInfos((prev) => ({
+              setUserInfosUpdate((prev) => ({
                 ...prev,
                 looking_for_age_max: Number(e.target.value),
               }))
@@ -322,10 +307,31 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
           update user{" "}
         </button>
       )}
-      <button className="btnUpdateUser" id="deleteUser" onClick={deleteUser}>
+      <button className="btnUpdateUser" id="deleteUser" onClick={() => setDeleteWarning(true)}>
         {" "}
         delete account{" "}
       </button>
+			{ deleteWarning && (
+				<> 
+				<div> Are you sure you want to delete your account ? </div>
+				<div>
+				<form onSubmit={deleteUser}>
+					<label htmlFor="password"> Enter your password: </label>
+					<input
+						type="password"
+						name="password"
+						value={deletePassword}
+						onChange={(e) => setDeletePassword(e.target.value)}
+						required
+					/>
+					<input type="submit" value="Delete account" />
+				</form>
+				{ showWrongPassword && (
+					<div> Wrong password </div>
+				)}
+				</div>
+				</>
+			)}
     </div>
   );
 };
