@@ -130,18 +130,17 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 				feedback
 			</button>
 			{ showFeedback && (
-				<div id="feedback"> 
-				<form onSubmit={submitFeedback}>
+				<form id="feedback" onSubmit={submitFeedback}>
 					<label > Enter your feedback: </label>
-					<input
-						type="textarea"
+					<textarea
 						value={feedback}
 						onChange={(e) => setFeedback(e.target.value)}
+						cols={45}
+						rows={8}
 						required
 					/>
 					<input type="submit" value="Send feedback" />
 				</form>
-				</div>
 			)}
 
       <div id="privateInfos">
