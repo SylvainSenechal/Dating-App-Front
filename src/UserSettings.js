@@ -13,6 +13,8 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
   const [deleteWarning, setDeleteWarning] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [showWrongPassword, setShowWrongPassword] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [feedback, setFeedback] = useState("");
 
 	useEffect(() => {
     async function getMatchingPotential() {
@@ -107,8 +109,41 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
     });
 	}
 
+	const submitFeedback = async e => {
+    e.preventDefault();
+
+		console.log("submit ", feedback)
+		try {
+      await post(`/feedbacks`, user.token, {
+        feedback_message: feedback,
+      });
+      setFeedback("");
+      setShowFeedback(false);
+    } catch (error) {
+      console.log("post message error : " + error);
+    }
+	}
+	
   return (
     <div className="display" id="userProfile">
+      <button id="feedbackButton" onClick={() => setShowFeedback(true)}>
+				feedback
+			</button>
+			{ showFeedback && (
+				<div id="feedback"> 
+				<form onSubmit={submitFeedback}>
+					<label > Enter your feedback: </label>
+					<input
+						type="textarea"
+						value={feedback}
+						onChange={(e) => setFeedback(e.target.value)}
+						required
+					/>
+					<input type="submit" value="Send feedback" />
+				</form>
+				</div>
+			)}
+
       <div id="privateInfos">
         <p className="updateCategories">Private infos</p>
 
