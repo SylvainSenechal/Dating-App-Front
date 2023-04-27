@@ -81,14 +81,25 @@ const DiscussionsPreview = ({
     });
 
     for (let elem of content) {
-      const dateDisplay =
-        days[elem.lastMessageDate.getDay()] +
-        " " +
-        elem.lastMessageDate.getHours() +
-        ":" +
-        elem.lastMessageDate.getMinutes() +
-        ":" +
-        elem.lastMessageDate.getSeconds();
+      let loverName = ""
+      for (let loveRelationship of lovers) {
+        console.log(loveRelationship.loveUUID)
+        if (loveRelationship.love_uuid === elem.loveUUID) {
+          loverName = loveRelationship.name
+        }
+      }
+      let msSince1970 = elem.lastMessageDate.getTime()
+      let diffMs = Date.now() - msSince1970
+      let minutesDiff = Math.round(diffMs / 60000)
+      let dateDisplay = ""
+      if (minutesDiff <= 1) {
+        dateDisplay = "1 minute ago:"
+      } else if (minutesDiff < 60) {
+        dateDisplay = minutesDiff + " minutes ago:"
+      } else {
+        dateDisplay = Math.floor(minutesDiff / 60) + " hours ago:"
+      }
+  
       contentSorted.push(
         <button
           data-index={elem.loveUUID}
@@ -96,7 +107,7 @@ const DiscussionsPreview = ({
           key={elem.loveUUID}
           className="discussionBlocPreview"
         >
-          <div className="previewName"> Love {elem.loveID} </div>{" "}
+          <div className="previewName"> {loverName} </div>{" "}
           {/* todo : name of the lover */}
           <div className="previewDate"> {dateDisplay} </div>
           <div className="PreviewUnSeenMessages"> {elem.nbMessagesUnseen} </div>
@@ -113,17 +124,6 @@ const DiscussionsPreview = ({
       <div id="ongoingDiscussions">{discussionPreview()}</div>
     </div>
   );
-};
-
-const days = {
-  // todo : move to utils/const folder
-  0: "Sun",
-  1: "Mon",
-  2: "Tue",
-  3: "Wed",
-  4: "Thur",
-  5: "Fri",
-  6: "Sat",
 };
 
 export default DiscussionsPreview;

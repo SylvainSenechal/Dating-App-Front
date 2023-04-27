@@ -47,7 +47,6 @@ const Dashboard = ({ user, setUser }) => {
     newChatMessageRef.current = val;
     _setNewChatMessage(val);
   };
-
   useEffect(() => {
     const getMatchesList = async () => {
       try {
