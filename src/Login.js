@@ -135,6 +135,7 @@ const Login = ({ setUser }) => {
         <div className="formsLoginRegister">
           <div className="logInfo" style={{ "--order": 0 }}>
             <p className="borderLine"> Register </p>
+        <div>TOS</div>
             <form onSubmit={handleSubmitRegistration}>
               <label htmlFor="email"> Enter your email: </label>
               <input

@@ -24,24 +24,24 @@ const FindingLove = ({
     distance: 0
   });
   const [ImageIdShown, setImageIdShown] = useState(0);
-  const [imagesTarget, setImagesTarget] = useState([
-    "https://picsum.photos/100/1200",
-    "https://picsum.photos/200/1200",
-    "https://picsum.photos/300/1200",
-    "https://picsum.photos/400/1200",
-    "https://picsum.photos/500/1200",
-  ]);
-  const [nbImages, setNbImages] = useState(imagesTarget.length);
+  const [imagesTarget, setImagesTarget] = useState([]);
   const [findNewLover, setFindNewLover] = useState(0);
 
   useEffect(() => {
     async function getNewProfile() {
       try {
-        setLoveTarget(await get(`/users/findlover`, user.token));
-        console.log("getting new imagee"); // todo
+        const potentialLover = await get(`/users/findlover`, user.token)
+        setLoveTarget(potentialLover)
+        if (potentialLover.photo_urls !== null && potentialLover.photo_display_orders !== null) {
+          let orderedPhotosUrls = []
+          let photosUrls = potentialLover.photo_urls.split(',')
+          for (let order of potentialLover.photo_display_orders.split(',')) {
+            orderedPhotosUrls.push(photosUrls[order - 1])
+          }
+          setImagesTarget(orderedPhotosUrls)
+        }
       } catch (error) {
         console.log("find lover error : " + error);
-        console.log("No potential lover found");
         setLoveTarget({
           uuid: -1,
           name: "",
@@ -55,6 +55,10 @@ const FindingLove = ({
     }
     getNewProfile();
   }, [findNewLover]);
+
+  document.onclick = e => {
+    console.log(loveTarget)
+  }
 
   const swipe = async (love) => {
     try {
@@ -103,7 +107,7 @@ const FindingLove = ({
       setImageIdShown((prev) => Math.max(prev - 1, 0));
     }
     if (xPosition > 0.6) {
-      setImageIdShown((prev) => Math.min(prev + 1, nbImages - 1));
+      setImageIdShown((prev) => Math.min(prev + 1, imagesTarget.length - 1));
     }
     console.log(ImageIdShown);
   };
@@ -174,11 +178,17 @@ const FindingLove = ({
           )}
         </div>
         <div id="imageAndInfos">
-          <img
-            id="targetImage"
-            onClick={clickImage}
-            src={imagesTarget[ImageIdShown]}
-          />
+          {
+            imagesTarget.length === 0 ?
+            <div> user has no photos </div> 
+            :
+            <img
+              id="targetImage"
+              onClick={clickImage}
+              src={imagesTarget[ImageIdShown]}
+            />
+          }
+        
           <div id="targetOverview">
             <div className="targetInfos">
               {" "}

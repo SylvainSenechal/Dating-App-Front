@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { get, getQuery, post, put, deleteReq } from "./utils/Requests";
+import ImageUploader from "./ImageUploader";
 
 const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
   const tokenData64URL = user.token.split(".")[1];
@@ -15,6 +16,23 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
   const [showWrongPassword, setShowWrongPassword] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedback, setFeedback] = useState("");
+
+  const [needReloadUser, setNeedReloadUser] = useState(false)
+
+  useEffect(() => {
+    async function getUserInfos() {
+      try {
+        setUserInfos(await get(`/users/${user_uuid}`, user.token));
+        setNeedReloadUser(false)
+      } catch (error) {
+        console.log("get user infos error : " + error);
+      }
+    }
+
+    if (needReloadUser) {
+      getUserInfos();
+    }
+  }, [needReloadUser])
 
 	useEffect(() => {
     async function getMatchingPotential() {
@@ -43,7 +61,8 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
   const updateUser = async () => {
     try {
       const result = await put(`/users/${user_uuid}`, user.token, userInfosUpdate);
-      setUserInfos(userInfosUpdate);
+      // setUserInfos(userInfosUpdate);
+      setNeedReloadUser(true)
       setUserModified(false);
     } catch (error) {
       console.log("update user infos error : " + error);
@@ -126,7 +145,7 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 	
   return (
     <div className="display" id="userProfile">
-      <button id="feedbackButton" onClick={() => setShowFeedback(true)}>
+      <button id="feedbackButton" onClick={() => setShowFeedback(!showFeedback)}>
 				feedback
 			</button>
 			{ showFeedback && (
@@ -164,6 +183,8 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 
       <div id="publicInfos">
         <p className="updateCategories">Public infos</p>
+        
+        <ImageUploader token={user.token} userInfos={userInfos} setNeedReloadUser={setNeedReloadUser}/>
 
         <div className="inputsAlign" id="name">
           <label> Name: </label>
