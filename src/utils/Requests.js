@@ -1,7 +1,5 @@
 import { envData } from './../App';
 
-const STATUS_OK = 200
-
 const get = async (url, jwtToken) => {
   const getResult = await fetch(`${envData.apiURL}${url}`, {
     method: 'GET',
