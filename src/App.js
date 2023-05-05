@@ -5,7 +5,7 @@ import { post } from "./utils/Requests";
 
 const envData = {
   apiURL:
-    process.env.NODE_ENV === "production" ? "http://13.215.238.178:8080" : "http://localhost:8080",
+    process.env.NODE_ENV === "production" ? "http://api.lemgo.io" : "http://localhost:8080",
 };
 export { envData };
 
