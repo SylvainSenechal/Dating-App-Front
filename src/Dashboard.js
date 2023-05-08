@@ -7,6 +7,7 @@ import Insights from "./Insights";
 import Matches from "./Matches";
 import EventsDisplay from "./EventsDisplay";
 import { get } from "./utils/Requests";
+import { envData } from './App';
 
 const Dashboard = ({ user, setUser }) => {
   const tokenData64URL = user.token.split(".")[1];
@@ -88,7 +89,7 @@ const Dashboard = ({ user, setUser }) => {
 
   useEffect(() => {
     var eventSource = new EventSource(
-      `http://localhost:8080/server_side_event/${userInfos.private_uuid}`
+      `${envData.apiURL}/server_side_event/${userInfos.private_uuid}`
     );
     eventSource.addEventListener("update", (e) => {
       console.log("received sse update:", JSON.parse(e.data));
