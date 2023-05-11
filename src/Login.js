@@ -163,7 +163,7 @@ const Login = ({ setUser }) => {
             last connected 2 years ago !{" "}
           </div>
           <div className="presentationPoint">
-            No hidden score, the users that you see are the user matching your
+            No hidden score, the users that you see are the users matching your
             filters
           </div>
           <div className="presentationPoint">
