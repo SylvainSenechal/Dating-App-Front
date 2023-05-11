@@ -157,16 +157,20 @@ const Login = ({ setUser }) => {
       <h1 className="appTitle">Lemgo</h1>
       <div className="appPresentation">
         <h3> One dating web-app, no shady algorithm : </h3>
-        <div className="presentationPoint">
-          We show you profiles sorted by connection date : you won't see users
-          last connected 2 years ago !{" "}
-        </div>
-        <div className="presentationPoint">
-          No hidden score, the users that you see are the user matching your
-          filters
-        </div>
-        <div className="presentationPoint">
-          Obtain live insights about the app : how many people saw your profile, swiped right or left on you, gender repartition, total users and more
+        <div id="appPresentationArguments">
+          <div className="presentationPoint">
+            We show you profiles sorted by connection date : you won't see users
+            last connected 2 years ago !{" "}
+          </div>
+          <div className="presentationPoint">
+            No hidden score, the users that you see are the user matching your
+            filters
+          </div>
+          <div className="presentationPoint">
+            Obtain live insights about the app : how many people saw your
+            profile, swiped right or left on you, gender repartition, total
+            users and more
+          </div>
         </div>
       </div>
       <div className="formsLoginRegister">
