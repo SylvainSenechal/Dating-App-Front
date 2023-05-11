@@ -180,7 +180,7 @@ const ImageUploader = ({ token, userInfos, setNeedReloadUser }) => {
 							className='profileImage'
 							src={userImages[i]}
 					/>
-					<button id='deletePhotoButton' onClick={() => handleDeletePhoto(userImages[i])}> Delete </button>
+					<button className='deletePhotoButton' onClick={() => handleDeletePhoto(userImages[i])}> Delete </button>
 					</div>
 				)
 			} else if (i === userImages.length) {

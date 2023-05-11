@@ -5,20 +5,21 @@ import { get, post } from "./utils/Requests";
 const Login = ({ setUser }) => {
   const [emailLogin, setEmailLogin] = useState("");
   const [passwordLogin, setPasswordLogin] = useState("");
-
-  const [stepRegister, setStepRegister] = useState("email"); // 1. email 2. password 3. other infos (name, age)
   const [registerData, setRegisterData] = useState({
     email: "",
     name: "",
     password: "",
-    age: "",
+    age: 25,
     latitude: 0,
     longitude: 0,
-    gender: "",
-    looking_for: "",
+    gender: Math.random() > 0.5 ? "female" : "male",
+    looking_for: Math.random() > 0.5 ? "female" : "male",
   });
   const [messageRegister, setMessageRegister] = useState("");
+  const [messageLogin, setMessageLogin] = useState("");
   const [keepConnected, setKeepConnected] = useState(false);
+  const [canRegister, setCanRegister] = useState(false);
+  const [canLogin, setCanLogin] = useState(false);
 
   useEffect(() => {
     const geo = navigator.geolocation;
@@ -32,6 +33,31 @@ const Login = ({ setUser }) => {
     });
   }, []);
 
+  useEffect(() => {
+    console.log(registerData);
+    if (
+      registerData.email !== "" &&
+      registerData.name !== "" &&
+      registerData.password !== "" &&
+      registerData.age !== 0 &&
+      registerData.gender !== "" &&
+      registerData.looking_for !== ""
+    ) {
+      setCanRegister(true);
+    } else {
+      setCanRegister(false);
+    }
+  }, [registerData]);
+
+  useEffect(() => {
+    console.log(registerData);
+    if (emailLogin !== "" && passwordLogin !== "") {
+      setCanLogin(true);
+    } else {
+      setCanLogin(false);
+    }
+  }, [emailLogin, passwordLogin]);
+
   const handleSubmitRegistration = async (event) => {
     event.preventDefault();
 
@@ -39,6 +65,7 @@ const Login = ({ setUser }) => {
       await post(`/users`, undefined, registerData);
       setMessageRegister("User created successfully");
     } catch (error) {
+      setMessageRegister("registration failed");
       console.log("registering error : " + error);
     }
   };
@@ -63,23 +90,8 @@ const Login = ({ setUser }) => {
         window.sessionStorage.setItem("refreshToken", result.refresh_token);
       }
     } catch (error) {
+      setMessageLogin("login failed")
       console.log("login error : " + error);
-    }
-  };
-
-  const nextStep = () => {
-    if (stepRegister === "email") {
-      setStepRegister((prev) => "password");
-    } else if (stepRegister === "password") {
-      setStepRegister((prev) => "infos");
-    }
-  };
-
-  const previousStep = () => {
-    if (stepRegister === "infos") {
-      setStepRegister((prev) => "password");
-    } else if (stepRegister === "password") {
-      setStepRegister((prev) => "email");
     }
   };
 
@@ -113,160 +125,165 @@ const Login = ({ setUser }) => {
             checked={keepConnected}
             onChange={(e) => setKeepConnected(e.target.checked)}
           />
-          <input type="submit" value="Login" />
+          {canLogin ? (
+              <input
+                className="buttonSubmitLogin"
+                id="buttonSubmitAllowed"
+                type="submit"
+                value="Login"
+              />
+            ) : (
+              <input
+                className="buttonSubmitLogin"
+                type="submit"
+                value="Login"
+              />
+            )}
         </form>
+        <div> {messageLogin} </div>
       </div>
     );
   };
 
-  const setGender = (e, genderData) => {
-    e.preventDefault();
-    setRegisterData((prev) => ({ ...prev, gender: genderData }));
+  const setGender = (e) => {
+    setRegisterData((prev) => ({ ...prev, gender: e.target.value }));
   };
-  const setLookingFor = (e, genderData) => {
-    e.preventDefault();
-    setRegisterData((prev) => ({ ...prev, looking_for: genderData }));
+  const setLookingFor = (e) => {
+    setRegisterData((prev) => ({ ...prev, looking_for: e.target.value }));
   };
 
-  if (stepRegister === "email") {
-    return (
-      <div className="LoginPage">
-        <div className="formsLoginRegister">
-          <div className="logInfo" style={{ "--order": 0 }}>
-            <p className="borderLine"> Register </p>
-        <div>TOS</div>
-            <form onSubmit={handleSubmitRegistration}>
-              <label htmlFor="email"> Enter your email: </label>
-              <input
-                type="text"
-                name="email"
-                id="emailRegister"
-                value={registerData.email}
-                onChange={(e) =>
-                  setRegisterData((prev) => ({
-                    ...prev,
-                    email: e.target.value,
-                  }))
-                }
-                required
-              />
-              <input type="submit" value="Register" />
-            </form>
-            <button onClick={nextStep}> nextStep </button>
-            <button onClick={previousStep}> previousStep </button>
-            <div> {messageRegister} </div>
-          </div>
+  document.onclick = (e) => {
+    console.log(registerData);
+  };
 
-          {LoginComponent()}
-        </div>
-        {/* < Footer /> */}
-      </div>
-    );
-  } else if (stepRegister === "password") {
-    return (
-      <div className="LoginPage">
-        <div className="formsLoginRegister">
-          <div className="logInfo" style={{ "--order": 0 }}>
-            <p className="borderLine"> Register </p>
-            <form onSubmit={handleSubmitRegistration}>
-              <label htmlFor="password"> Enter your password: </label>
-              <input
-                type="password"
-                name="password"
-                id="passwordRegister"
-                value={registerData.password}
-                onChange={(e) =>
-                  setRegisterData((prev) => ({
-                    ...prev,
-                    password: e.target.value,
-                  }))
-                }
-                required
-              />
-              <input type="submit" value="Register" />
-            </form>
-            <button onClick={nextStep}> nextStep </button>
-            <button onClick={previousStep}> previousStep </button>
-            <div> {messageRegister} </div>
-          </div>
+  return (
+    <div className="LoginPage">
+      <div className="formsLoginRegister">
+        <div className="logInfo" style={{ "--order": 0 }}>
+          <p className="borderLine"> Register </p>
+          <form onSubmit={handleSubmitRegistration}>
+            <label htmlFor="emailRegister"> Enter your email: </label>
+            <input
+              type="text"
+              id="emailRegister"
+              value={registerData.email}
+              onChange={(e) =>
+                setRegisterData((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                }))
+              }
+              required
+            />
+            <label htmlFor="passwordRegister"> Enter your password: </label>
+            <input
+              type="password"
+              id="passwordRegister"
+              value={registerData.password}
+              onChange={(e) =>
+                setRegisterData((prev) => ({
+                  ...prev,
+                  password: e.target.value,
+                }))
+              }
+              required
+            />
+            <label htmlFor="nameRegister"> Enter your name: </label>
+            <input
+              type="text"
+              id="nameRegister"
+              value={registerData.name}
+              onChange={(e) =>
+                setRegisterData((prev) => ({ ...prev, name: e.target.value }))
+              }
+              required
+            />
+            <label htmlFor="ageRegister"> Enter your age: </label>
+            <input
+              type="number"
+              min="18"
+              max="127"
+              id="ageRegister"
+              value={registerData.age}
+              onChange={(e) =>
+                setRegisterData((prev) => ({
+                  ...prev,
+                  age: Number(e.target.value),
+                }))
+              }
+              required
+            />
 
-          {LoginComponent()}
-        </div>
-        {/* < Footer /> */}
-      </div>
-    );
-  } else if (stepRegister === "infos") {
-    return (
-      <div className="LoginPage">
-        <div className="formsLoginRegister">
-          <div className="logInfo" style={{ "--order": 0 }}>
-            <p className="borderLine"> Register </p>
-            <form onSubmit={handleSubmitRegistration}>
-              <label htmlFor="name"> Enter your name: </label>
-              <input
-                type="text"
-                name="name"
-                id="nameRegister"
-                value={registerData.name}
-                onChange={(e) =>
-                  setRegisterData((prev) => ({ ...prev, name: e.target.value }))
-                }
-                required
-              />
-              <label htmlFor="age"> Enter your age: </label>
-              <input
-                type="number"
-                name="age"
-                id="ageRegister"
-                value={registerData.age}
-                onChange={(e) =>
-                  setRegisterData((prev) => ({
-                    ...prev,
-                    age: Number(e.target.value),
-                  }))
-                }
-                required
-              />
-              <label htmlFor="gender"> Enter your gender: </label>
-              <div id="gender pick">
-                {/* <button onClick={() => setRegisterData(prev => ({ ...prev, gender: "male" }))}> male </button> */}
-                <button onClick={(e) => setGender(e, "male")}> male </button>
-                <button onClick={(e) => setGender(e, "female")}>
-                  {" "}
-                  female{" "}
-                </button>
-              </div>
-              {/* <input type="text" name="gender" id="genderRegister" value={registerData.gender} onChange={e => setRegisterData(prev => ({ ...prev, gender: e.target.value }))} required /> */}
-              <label htmlFor="lookingFor">
-                {" "}
-                Enter who you are looking for:{" "}
+            <label htmlFor="gender"> Enter your gender: </label>
+            <div className="genderPick">
+              <label>
+                male
+                <input
+                  className="genderPickRadio"
+                  type="radio"
+                  value="male"
+                  checked={registerData.gender === "male"}
+                  onChange={setGender}
+                />
               </label>
-              <div id="looking_for pick">
-                <button onClick={(e) => setLookingFor(e, "male")}>
-                  {" "}
-                  male{" "}
-                </button>
-                <button onClick={(e) => setLookingFor(e, "female")}>
-                  {" "}
-                  female{" "}
-                </button>
-              </div>
-              {/* <input type="text" name="lookingFor" id="lookingForRegister" value={registerData.lookingFor} onChange={e => setRegisterData(prev => ({ ...prev, looking_for: e.target.value }))} required /> */}
-              <input type="submit" value="Register" />
-            </form>
-            <button onClick={nextStep}> nextStep </button>
-            <button onClick={previousStep}> previousStep </button>
-            <div> {messageRegister} </div>
-          </div>
+              <label>
+                female
+                <input
+                  className="genderPickRadio"
+                  type="radio"
+                  value="female"
+                  checked={registerData.gender === "female"}
+                  onChange={setGender}
+                />
+              </label>
+            </div>
 
-          {LoginComponent()}
+            <label htmlFor="lookingFor"> Enter who you are looking for: </label>
+            <div className="genderPick">
+              <label>
+                male
+                <input
+                  className="genderPickRadio"
+                  type="radio"
+                  value="male"
+                  checked={registerData.looking_for === "male"}
+                  onChange={setLookingFor}
+                />
+              </label>
+              <label>
+                female
+                <input
+                  className="genderPickRadio"
+                  type="radio"
+                  value="female"
+                  checked={registerData.looking_for === "female"}
+                  onChange={setLookingFor}
+                />
+              </label>
+            </div>
+            {canRegister ? (
+              <input
+                className="buttonSubmitLogin"
+                id="buttonSubmitAllowed"
+                type="submit"
+                value="Register"
+              />
+            ) : (
+              <input
+                className="buttonSubmitLogin"
+                type="submit"
+                value="Register"
+              />
+            )}
+          </form>
+          <div> {messageRegister} </div>
         </div>
-        {/* < Footer /> */}
+
+        {LoginComponent()}
       </div>
-    );
-  } else {
-    return <div> unknown register step </div>;
-  }
+      {/* < Footer /> */}
+    </div>
+  );
 };
 
 export default Login;

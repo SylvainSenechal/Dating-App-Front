@@ -7,7 +7,7 @@ import Insights from "./Insights";
 import Matches from "./Matches";
 import EventsDisplay from "./EventsDisplay";
 import { get } from "./utils/Requests";
-import { envData } from './App';
+import { envData } from "./App";
 
 const Dashboard = ({ user, setUser }) => {
   const tokenData64URL = user.token.split(".")[1];
@@ -40,9 +40,6 @@ const Dashboard = ({ user, setUser }) => {
     looking_for_age_max: 0,
     description: "",
   });
-  document.onclick = e => {
-    console.log(userInfos)
-  }
 
   const setNewChatMessage = (val) => {
     newChatMessageRef.current = val;
@@ -93,11 +90,13 @@ const Dashboard = ({ user, setUser }) => {
     );
     eventSource.addEventListener("update", (e) => {
       console.log("received sse update:", JSON.parse(e.data));
-      const sse_message = JSON.parse(e.data)
+      const sse_message = JSON.parse(e.data);
       switch (sse_message.message_type) {
         case "ChatMessage":
           if (sse_message.data.ChatMessage.poster_uuid !== user_uuid) {
-            setNotificationDisplay(`New message : ${sse_message.data.ChatMessage.message}`);
+            setNotificationDisplay(
+              `New message : ${sse_message.data.ChatMessage.message}`
+            );
             const displayer = document.getElementById("eventsDisplay");
             displayer.classList.add("displayer");
             setTimeout(() => {
@@ -108,14 +107,18 @@ const Dashboard = ({ user, setUser }) => {
                 displayer.classList.remove("removedDisplayer");
               }, 1000);
             }, 3000);
-         }
-    
+          }
+
           setNewChatMessage(newChatMessageRef.current + 1);
-          break
+          break;
         case "GreenTickMessage":
-          console.log(sse_message.data)
-          setNewGreenTickLoveUUID(sse_message.data.GreenTickMessage.uuid_love_room + "," + Math.random() * 100000)
-          break
+          console.log(sse_message.data);
+          setNewGreenTickLoveUUID(
+            sse_message.data.GreenTickMessage.uuid_love_room +
+              "," +
+              Math.random() * 100000
+          );
+          break;
       }
     });
   }, [userInfos]);
@@ -230,8 +233,7 @@ const Dashboard = ({ user, setUser }) => {
         // TODO : remove this part ?
         <div id="dashboardOut">
           <div id="dashboardIn">
-            <div id="infos" className="dashboardElement">
-            </div>
+            <div id="infos" className="dashboardElement"></div>
             <div id="logout" className="dashboardElement">
               <button onClick={logout}> Logout </button>
             </div>
