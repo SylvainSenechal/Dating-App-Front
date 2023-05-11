@@ -174,8 +174,8 @@ const FindingLove = ({
             <div className="targetInfos"> {displayLastSeen} 👀 </div>
             <div className="targetInfos"> Distance : {loveTarget.distance} km </div>
             <div id="actionButtons">
-              <button onClick={swipeLeft}> Hate </button>
-              <button onClick={showTargetDetails}> Details </button>
+              <button onClick={swipeLeft}> Nope </button>
+              {/* <button onClick={showTargetDetails}> Details </button> */}
               <button onClick={swipeRight}> Love </button>
             </div>
           </div>

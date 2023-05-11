@@ -61,10 +61,12 @@ const UserSettings = ({ user, setUser, userInfos, setUserInfos }) => {
 
   useEffect(() => {
     document.getElementById("nbPotentialMatch").style.animation = "shake 1s";
-    setTimeout(
-      () => (document.getElementById("nbPotentialMatch").style.animation = ""),
-      1000
-    );
+    setTimeout(() => {
+      const divMatches = document.getElementById("nbPotentialMatch");
+      if (divMatches != null) {
+        document.getElementById("nbPotentialMatch").style.animation = "";
+      }
+    }, 1000);
   }, [nbPotentialMatched]);
 
   const updateUser = async () => {

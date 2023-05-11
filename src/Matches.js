@@ -77,6 +77,10 @@ const Matches = ({
     setLoveUUID(loveUUID);
   };
 
+  document.onclick = (e) => {
+    console.log(lovers);
+  };
+
   // TODO : pinned lover feature
   return (
     <div className="display" id="matches">
@@ -94,18 +98,26 @@ const Matches = ({
                 onClick={chatWith}
                 key={lover.love_uuid}
               >
-                <img id="previewImage" src="https://picsum.photos/50/100" />
+                <img id="previewImage" src={lover.first_photo_url} />
                 <div> {lover.name} </div>
               </div>
             ))}
           </div>
         </>
       ) : (
+        <>
         <div id="generalInfosTargetDiscussion">
-          <button onClick={() => setLoveUUID(-1)}> go back </button>
-          <img id="previewImage" src="https://picsum.photos/50/100" />
-          <div> {lovers.find((elem) => elem.love_uuid == loveUUID).name} </div>
+          <button id="buttonBackListLovers" onClick={() => setLoveUUID(-1)}> back </button>
+          <img
+            id="previewImage"
+            src={
+              lovers.find((elem) => elem.love_uuid == loveUUID).first_photo_url
+            }
+          />
+          <div id="nameLoverDiscussion"> {lovers.find((elem) => elem.love_uuid == loveUUID).name} </div>
         </div>
+        <div id="lineDivider"> </div>
+        </>
       )}
 
       {loveUUID === -1 ? (

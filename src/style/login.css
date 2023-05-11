@@ -13,9 +13,11 @@ body {
   width: 100vw;
   height: 100vh;
   grid-template-columns: repeat(6, 1fr);
-  grid-template-rows: 7fr 3fr;
-  grid-template-areas: '. formsLoginRegister formsLoginRegister formsLoginRegister formsLoginRegister .'
-                        'footer footer footer footer footer footer';
+  grid-template-rows: 1fr 2fr 7fr 1fr;
+  grid-template-areas: ". appTitle appTitle appTitle appTitle ."
+                      ". appPresentation appPresentation appPresentation appPresentation ."
+                      ". formsLoginRegister formsLoginRegister formsLoginRegister formsLoginRegister ."
+                      "footer footer footer footer footer footer";
   justify-items: stretch;
   align-items: center;
   justify-content: start;
@@ -93,6 +95,7 @@ body {
 
 .buttonSubmitLogin {
   width: 30%;
+  height: 40px;
   background-color: #909090;
   appearance: none;
   border: 1px solid rgba(27, 31, 35, .15);
@@ -124,4 +127,28 @@ body {
 
 #buttonSubmitAllowed:hover {
   background-color: #0f702a;
+}
+
+.appTitle {
+  grid-area: appTitle;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  margin: 30px;
+  margin-bottom: 0px;
+  box-shadow: 1px 2px 5px rgb(0 0 0 / 15%);
+  border-radius: 20px;
+}
+
+.appPresentation {
+  grid-area: appPresentation;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  margin: 60px;
+  margin-bottom: 0px;
+  box-shadow: 1px 2px 5px rgb(0 0 0 / 15%);
+  border-radius: 20px;
 }

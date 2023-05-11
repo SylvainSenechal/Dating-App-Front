@@ -90,7 +90,7 @@ const Login = ({ setUser }) => {
         window.sessionStorage.setItem("refreshToken", result.refresh_token);
       }
     } catch (error) {
-      setMessageLogin("login failed")
+      setMessageLogin("login failed");
       console.log("login error : " + error);
     }
   };
@@ -126,19 +126,15 @@ const Login = ({ setUser }) => {
             onChange={(e) => setKeepConnected(e.target.checked)}
           />
           {canLogin ? (
-              <input
-                className="buttonSubmitLogin"
-                id="buttonSubmitAllowed"
-                type="submit"
-                value="Login"
-              />
-            ) : (
-              <input
-                className="buttonSubmitLogin"
-                type="submit"
-                value="Login"
-              />
-            )}
+            <input
+              className="buttonSubmitLogin"
+              id="buttonSubmitAllowed"
+              type="submit"
+              value="Login"
+            />
+          ) : (
+            <input className="buttonSubmitLogin" type="submit" value="Login" />
+          )}
         </form>
         <div> {messageLogin} </div>
       </div>
@@ -158,6 +154,21 @@ const Login = ({ setUser }) => {
 
   return (
     <div className="LoginPage">
+      <h1 className="appTitle">Lemgo</h1>
+      <div className="appPresentation">
+        <h3> One dating web-app, no shady algorithm : </h3>
+        <div className="presentationPoint">
+          We show you profiles sorted by connection date : you won't see users
+          last connected 2 years ago !{" "}
+        </div>
+        <div className="presentationPoint">
+          No hidden score, the users that you see are the user matching your
+          filters
+        </div>
+        <div className="presentationPoint">
+          Obtain live insights about the app : how many people saw your profile, swiped right or left on you, gender repartition, total users and more
+        </div>
+      </div>
       <div className="formsLoginRegister">
         <div className="logInfo" style={{ "--order": 0 }}>
           <p className="borderLine"> Register </p>
